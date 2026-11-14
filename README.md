@@ -102,3 +102,6 @@ Primjenjuju se pravila timskog rada kolegija i priloženi [kodeks ponašanja](CO
 ---
 
 Struktura dokumentacije prilagođena je [predlošku kolegija Programsko inženjerstvo](https://github.com/VladoSruk/Programsko-inzenjerstvo) autora Vlade Sruka. Izvorni citatni podaci nalaze se u [CITATION.cff](CITATION.cff), a prilagodbe i uporaba AI-ja opisane su u [Home.md](docs/Home.md#izjava-o-uporabi-umjetne-inteligencije).
+
+
+CI/CD pipeline provjera za SCRUM-16.
