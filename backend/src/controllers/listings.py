@@ -2,7 +2,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-from src.database import get_db
+from src.dependencies import get_db
 from src.schemas.error import ErrorResponse
 from src.schemas.listing import ListingCreate, ListingResponse
 from src.services import listing_service
