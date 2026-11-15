@@ -13,7 +13,7 @@ No framework, build command, API key or runtime package installation is needed. 
 From the extracted project folder, optionally run:
 
 ```bash
-python3 -m http.server 8000
+python3 -m http.server 5500
 ```
 
 On Windows, `py -m http.server 8000` is an alternative. Open `http://localhost:8000`. The files also work on any ordinary static web host. Hash routes such as `index.html#/messages` do not need server rewrite rules.
@@ -29,21 +29,21 @@ On Windows, `py -m http.server 8000` is an alternative. Open `http://localhost:8
 
 ## Where to work
 
-| Location | Responsibility |
-| --- | --- |
-| `index.html` | Document metadata, stylesheet links, ordered scripts and the three DOM mount points. |
-| `styles/fonts.css` | Local DM Sans and Manrope font declarations. |
-| `styles/styles.css` | Design tokens, base styles, components and page layouts. |
-| `styles/responsive.css` | Responsive overrides and reduced-motion preference. |
-| `scripts/config.js` | Storage key, locale, sample fee and screen-directory visibility. |
-| `scripts/pages/` | Clearly named HTML-rendering functions for every screen. |
-| `scripts/components/` | Reusable HTML fragments: layouts, cards, icons, inputs and rental widgets. |
-| `scripts/data/` | Sample listings, categories, navigation, FAQs and administration records. |
-| `scripts/core/` | State, routing, event handlers, dialogs, formatting and DOM utilities. |
-| `scripts/app.js` | Initial render and hash-change listener. |
-| `assets/` | Local images, icon and descriptively named font files. |
-| `docs/` | Screen map, architecture, design system, backend handoff and review checklist. |
-| `tests/frontend.test.cjs` | Optional repeatable DOM integration checks. |
+| Location                  | Responsibility                                                                       |
+| ------------------------- | ------------------------------------------------------------------------------------ |
+| `index.html`              | Document metadata, stylesheet links, ordered scripts and the three DOM mount points. |
+| `styles/fonts.css`        | Local DM Sans and Manrope font declarations.                                         |
+| `styles/styles.css`       | Design tokens, base styles, components and page layouts.                             |
+| `styles/responsive.css`   | Responsive overrides and reduced-motion preference.                                  |
+| `scripts/config.js`       | Storage key, locale, sample fee and screen-directory visibility.                     |
+| `scripts/pages/`          | Clearly named HTML-rendering functions for every screen.                             |
+| `scripts/components/`     | Reusable HTML fragments: layouts, cards, icons, inputs and rental widgets.           |
+| `scripts/data/`           | Sample listings, categories, navigation, FAQs and administration records.            |
+| `scripts/core/`           | State, routing, event handlers, dialogs, formatting and DOM utilities.               |
+| `scripts/app.js`          | Initial render and hash-change listener.                                             |
+| `assets/`                 | Local images, icon and descriptively named font files.                               |
+| `docs/`                   | Screen map, architecture, design system, backend handoff and review checklist.       |
+| `tests/frontend.test.cjs` | Optional repeatable DOM integration checks.                                          |
 
 This is one application with 35 routes, rather than 35 duplicated HTML documents. Each page file returns a readable HTML template. Shared headers, sidebars and controls live in `scripts/components/` so a single edit updates all screens.
 
