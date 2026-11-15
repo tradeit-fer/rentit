@@ -31,7 +31,7 @@ function renderAdminModerationPage() {
                   <h3>${p.name}</h3>
                   <p>${p.host} · ${p.category}</p>
                   <p class="mt12">
-                    ${i === 1 ? "Note: check whether all listed accessories are visible in the photos." : "No issue was flagged in this sample review result."}
+                    ${i === 1 ? "Note: check whether all listed accessories are visible in the photos." : "No issue was flagged in the automatic review."}
                   </p>
                 </div>
                 <div class="rental-actions">

@@ -56,8 +56,8 @@ async def google_callback(request: Request, db: Session = Depends(get_db)):
         key="rentit_session",
         value=session_token,
         httponly=True,
-        secure=False,  # PODSJETNIK: promijeniti u True u produkciji (HTTPS)
-        samesite="lax",
+        secure=True,
+        samesite="none",
         max_age=int(SESSION_DURATION.total_seconds()),
         path="/",
     )

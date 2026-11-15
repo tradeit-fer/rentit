@@ -145,7 +145,7 @@ function renderIllustratedMap(big = false) {
             >${p.price} €</a
           >`,
       )
-      .join("")}<span class="map-note">Illustrated location map</span>
+      .join("")}
     <a
       href="https://www.google.com/maps/search/?api=1&query=Zagreb"
       target="_blank"

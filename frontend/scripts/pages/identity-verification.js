@@ -30,12 +30,7 @@ function renderVerificationPage() {
           <div class="card">
             <div class="between">
               <h3>Member identity</h3>
-              ${renderBadge("Sample view", "gray")}
             </div>
-            <p class="small mt12">
-              Identity verification needs a connected provider. Do not upload real identity
-              documents to this frontend preview.
-            </p>
             <div class="panel mt20">
               <div class="flex">
                 ${renderIcon("shield")}

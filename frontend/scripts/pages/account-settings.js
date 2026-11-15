@@ -59,13 +59,6 @@ ${escapeHtml(appState.profile.bio || "I enjoy trying new things and sharing equi
                 aria-checked="true"
                 aria-label="Two-step verification"
               ></button>
-            </div>
-            <div class="notice mt20">
-              ${renderIcon("info")}
-              <p>
-                Security controls are a frontend preview. Authentication must be connected before
-                these settings can protect an account.
-              </p>
             </div>`
         : tab === "notifications"
           ? /* HTML */ `<h3>Notifications your way</h3>

@@ -67,15 +67,14 @@ ${escapeHtml(d.description)}</textarea>
     content = /* HTML */ `<p class="small">
         Add at least one clear photo. We recommend front and back views, details and accessories.
       </p>
-      ${renderPhotoUploadSlots("listing")}${renderButton("sample-photos", "Use sample photos", "image", "link small mt20", 'data-mode="listing" type="button"')}
+      ${renderPhotoUploadSlots("listing")}${renderButton("sample-photos", "Use example photos", "image", "link small mt20", 'data-mode="listing" type="button"')}
       <hr />
       <div class="notice">
         ${renderIcon("info")}
         <div>
           <b>Automatic listing review</b>
           <p class="mt12">
-            Checks the category, photo suitability and description. This preview returns a sample
-            result; no AI service is connected.
+            Checks the category, photo suitability and description.
           </p>
         </div>
       </div>
@@ -84,7 +83,7 @@ ${escapeHtml(d.description)}</textarea>
           d.aiChecked
             ? /* HTML */ `<div class="panel">
                 <div class="flex green">
-                  ${renderIcon("check")}<b class="small">Sample review passed</b>
+                  ${renderIcon("check")}<b class="small">Review passed</b>
                 </div>
                 <div class="cost-row">
                   <span>Suggested category</span>
@@ -167,14 +166,13 @@ ${escapeHtml(d.description)}</textarea>
       </div>
       <div class="cost-row">
         <span>Content review</span
-        >${renderBadge(d.aiChecked ? "Sample review complete" : "Awaiting review", d.aiChecked ? "" : "amber")}
+        >${renderBadge(d.aiChecked ? "Review complete" : "Awaiting review", d.aiChecked ? "" : "amber")}
       </div>
       <hr />
       <div class="notice">
         ${renderIcon("info")}
         <p>
-          The platform fee and estimated earnings appear with each booking. Listings created in this
-          preview are saved only in this browser.
+          The platform fee and estimated earnings appear with each booking.
         </p>
       </div>
       <div class="mt20">

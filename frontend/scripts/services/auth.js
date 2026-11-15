@@ -1,6 +1,6 @@
 "use strict";
 
-const API_URL = "http://localhost:8000";
+const API_URL = "https://rentit-backend-fl4c.onrender.com";
 
 const authService = {
 

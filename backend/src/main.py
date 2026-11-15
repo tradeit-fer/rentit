@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# 1. Učitavanje .env varijabli prije bilo kakvog uvoza naših modula
+# Učitavanje .env datoteke prije uvoza aplikacije
 env_path = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(env_path)
 
@@ -22,12 +22,12 @@ app = FastAPI(
     version="2.0.0",
 )
 
-# Frontend origin
+# Frontend adrese kojima je dopušten pristup API-ju
 origins = [
     "http://localhost:5500",
+    "https://tradeit-x2uy.onrender.com",
 ]
 
-# Middleware postavke
 app.add_middleware(
     SessionMiddleware,
     secret_key=os.environ["SESSION_SECRET"],
@@ -43,7 +43,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Registracija svih rutera
+# Registracija ruta
 app.include_router(auth_router)
 app.include_router(listings_router)
 app.include_router(rentals_router)
@@ -51,9 +51,7 @@ app.include_router(rentals_router)
 
 @app.get("/")
 def home():
-    return {
-        "message": "Backend radi!"
-    }
+    return {"message": "Backend radi!"}
 
 
 @app.get("/api/v1/admin/test")
