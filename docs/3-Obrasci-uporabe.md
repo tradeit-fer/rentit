@@ -6,11 +6,11 @@
 
 **Cilj:** Prikazati granicu sustava, relevantne aktere i njihove glavne ciljeve u **preglednom UML dijagramu obrazaca uporabe**. Ako je za razumijevanje pojedinog dijela sustava potrebno prikazati više detalja, taj dio izdvojite u dodatni usmjereni dijagram. Dodatni dijagrami trebaju produbiti dio preglednog modela, a ne stvarati nepovezane ili duplicirane prikaze istog sustava.
 
-![Dijagram obrazaca uporabe sustava CrisisMap](./assets/diagrams/3-1-crisismap-system-UC.svg)
+![Dijagram obrazaca uporabe sustava RentIt](./assets/diagrams/use-case-diagram.svg)
 
-**Slika 3.1. Dijagram obrazaca uporabe sustava CrisisMap**
+**Slika 3.1. Dijagram obrazaca uporabe sustava RentIt**
 
-**PlantUML izvor:** [izvor](./puml/3-1-crisismap-system-UC.puml)
+**PlantUML izvor:** [izvor](./puml/use-case-diagram.puml)
 
 **Provjera dijagrama:** Prikažite prepoznate uloge koje **komuniciraju s aplikacijom**, a ne dionike koji s njom nemaju interakciju. Svaki glavni korisnički cilj mora imati pridruženog aktera; uključeni obrazac uporabe može se dosegnuti preko drugog obrasca uporabe bez vlastite izravne veze s akterom. `<<include>>` i `<<extend>>` koristite samo kada odnos odgovara stvarnom ponašanju.
 
@@ -55,23 +55,80 @@ Vanjski sustav može biti sekundarni akter obrasca uporabe kada sudjeluje u ostv
 | **Alternativni tokovi / Iznimke** | **[Korak]a — [Naziv iznimke]:** [Uvjet nastanka, reakcija programa i nastavak toka] |
 | **Posljedice (ishod)** | [Promjena stanja podataka ili potvrda nakon uspješnog završetka] |
 
+**UC-001: Registracija računa putem vanjskog Oauth sustava.**
+
+| Polje | Opis |
+| --- | --- |
+| Primarni akter | Korisnik |
+| ID zahtjeva | F-001 |
+| Preduvjeti, ako postoje | Nema. |
+| Glavni tijek | Uspješna autentikacija povezuje isti vanjski identitet s jednim računom. Novi račun dobiva korisničku ulogu. Odjava poništava aplikacijsku sesiju. |
+| Alternativni ili neuspješni tijekovi, ako postoje | Neuspješna ili prekinuta prijava ne stvara prijavljenu sesiju. |
+| Rezultat | Korisnik je registriran. |
+
+
+**UC-002: Izrada oglasa**
+
+| Polje | Opis |
+| --- | --- |
+| Primarni akter | Korisnik |
+| ID zahtjeva | F-003 |
+| Preduvjeti, ako postoje | Korisnik registriran. |
+| Glavni tijek | Obvezni su naziv, vrsta ponude, kategorija, opis, fotografija fizičkog predmeta, cijena s jedinicom obračuna, lokacija i uvjeti korištenja. |
+| Alternativni ili neuspješni tijekovi, ako postoje | Sustav odbija nepotpun unos uz poruku uz odgovarajuće polje.  |
+| Rezultat | Objava napravljena. |
+
+
+**UC-003: Pregled kataloga oglasa**
+
+| Polje | Opis |
+| --- | --- |
+| Primarni akter | Korisnik |
+| ID zahtjeva | F-004 |
+| Preduvjeti, ako postoje | Korisnik registriran. |
+| Glavni tijek | Detalji prikazuju opis, fotografije kada su primjenjive, cijenu i jedinicu obračuna, javnu lokaciju, raspoloživost, uvjete te profil ponuditelja.  |
+| Alternativni ili neuspješni tijekovi, ako postoje | - |
+| Rezultat | Prikaz oglasa. |
+
+
+**UC-004: Zahtjev za najam**
+
+| Polje | Opis |
+| --- | --- |
+| Primarni akter | Korisnik |
+| ID zahtjeva | F-004 |
+| Preduvjeti, ako postoje | Korisnik registriran. |
+| Glavni tijek | Korisnik odabire termin i vidi izračun prema F-019 te uvjete koje potvrđuje prije slanja. Poslužitelj provjerava oglas, datume i raspoloživost. Vlastiti oglas i nevaljan termin nije moguće rezervirati. |
+| Alternativni ili neuspješni tijekovi, ako postoje | Ponovljeno slanje iste radnje ne stvara dodatni zahtjev.  |
+| Rezultat | Zahtjev poslan. |
+
+**UC-005: Moderiranje oglasa**
+
+| Polje | Opis |
+| --- | --- |
+| Primarni akter | Administrator |
+| ID zahtjeva | F-006 |
+| Preduvjeti, ako postoje | Administrator je prijavljen i ima administratorske ovlasti; postoji oglas koja čeka pregled. |
+| Glavni tijek | Oglas upućen na ručni pregled nije javno objavljen prije odluke. Odluka ima autora, vrijeme i razlog, a vlasnik vidi ishod. Uklanjanje oglasa čuva povijest postojećih najmova. Uredan oglas koji prođe predviđene provjere ne zahtijeva obvezno prethodno odobrenje administratora. |
+| Alternativni ili neuspješni tijekovi, ako postoje | - |
+| Rezultat | Prijava ima novi status ako je administratorska radnja uspješno provedena; inače ostaje nepromijenjena. |
+
 <details>
 <summary><strong>Primjeri specifikacija: Registracija i prijava kriznog događaja</strong></summary>
 
 **Primjer — CrisisMap:**
 
-**UC-001: Registracija računa.** Ovaj kratki primjer odnosi se na projekt čiji odobreni zadatak uključuje račune s adresom e-pošte i lozinkom.
+**UC-001: Registracija računa putem vanjskog Oauth sustava.**
 
 | Polje | Opis |
 | --- | --- |
-| Primarni akter | Građanin (A-02 u primjeru) |
+| Primarni akter | Korisnik |
 | ID zahtjeva | F-001 |
 | Preduvjeti, ako postoje | Nema. |
-| Glavni tijek | Građanin unosi adresu e-pošte; aplikacija šalje poveznicu za potvrdu; građanin potvrđuje račun. |
-| Alternativni ili neuspješni tijekovi, ako postoje | Adresa e-pošte već postoji → aplikacija objašnjava zašto se registracija ne može nastaviti. |
-| Rezultat | Račun je aktivan nakon potvrde. |
+| Glavni tijek | Uspješna autentikacija povezuje isti vanjski identitet s jednim računom. Novi račun dobiva korisničku ulogu. Odjava poništava aplikacijsku sesiju. |
+| Alternativni ili neuspješni tijekovi, ako postoje | Neuspješna ili prekinuta prijava ne stvara prijavljenu sesiju. |
+| Rezultat | Korisnik je registriran. |
 
-Ako odobreni zadatak umjesto toga koristi isključivo OAuth prijavu, zamijenite ovaj primjer odgovarajućim ponašanjem prijave; nemojte dodavati registraciju lokalnom lozinkom samo radi podudaranja s primjerom.
 
 **UC-002: Podnošenje prijave kriznog događaja.** Ista polja mogu opisati dulji tijek u kojem odabir lokacije, provjera valjanosti i pohrana mogu ne uspjeti.
 
