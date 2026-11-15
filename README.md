@@ -1,18 +1,18 @@
-# TradeIt
+# RentIt
 
-**Najam predmeta i opreme od ljudi u blizini.** TradeIt povezuje vlasnike predmeta s osobama kojima su oni privremeno potrebni te objedinjuje pronalazak, dogovor najma, evidenciju stanja i korisničku podršku.
+**Najam predmeta i opreme od ljudi u blizini.** RentIt povezuje vlasnike predmeta s osobama kojima su oni privremeno potrebni te objedinjuje pronalazak, dogovor najma, evidenciju stanja i korisničku podršku.
 
 | Podatak            | Vrijednost                                                                |
 | ------------------ | ------------------------------------------------------------------------- |
-| Naziv aplikacije   | TradeIt                                                                   |
+| Naziv aplikacije   | RentIt                                                                   |
 | Naziv tima         | Sibirski plavac                                                           |
 | Nastavna grupa     | G03-01                                                                    |
-| GitHub repozitorij | https://github.com/LDavorija/tradeit                                      |
+| GitHub repozitorij | https://github.com/LDavorija/rentit                                      |
 | Početak čitanja    | [Dokumentacija](docs/Home.md) |
 
 ## Opis aplikacije
 
-Osobi kojoj jednom treba grafički kalkulator, alat ili kamera kupnja može biti nepotrebna, a pronalazak najmodavca zahtijeva dogovor na više mjesta. TradeIt predlaže katalog najma s cijenama i raspoloživosti, dogovorom između korisnika te fotografijama pri preuzimanju i povratu. Očekivana korist je lakša ponovna uporaba predmeta; ušteda vremena, novca ili utjecaj na okoliš još nisu mjereni.
+Osobi kojoj jednom treba grafički kalkulator, alat ili kamera kupnja može biti nepotrebna, a pronalazak najmodavca zahtijeva dogovor na više mjesta. RentIt predlaže katalog najma s cijenama i raspoloživosti, dogovorom između korisnika te fotografijama pri preuzimanju i povratu. Očekivana korist je lakša ponovna uporaba predmeta; ušteda vremena, novca ili utjecaj na okoliš još nisu mjereni.
 
 **Trenutačno stanje:** ovaj repozitorij sadrži početnu strukturu i dokumentaciju. `backend/src/app.js` je ogledni Node.js HTTP poslužitelj, a frontend build naredba generira samo stranicu „Frontend App”. Ranije izrađen zasebni frontend nije prenesen u ovaj ZIP. Poslovne funkcije, baza, autentikacija, naplata i AI integracije ovdje još nisu implementirani. [Ograničenja ispitivanja](docs/5-Ispitivanje.md#54-poznati-nedostaci-i-ogranicenja-ispitivanja).
 
@@ -102,3 +102,28 @@ Primjenjuju se pravila timskog rada kolegija i priloženi [kodeks ponašanja](CO
 ---
 
 Struktura dokumentacije prilagođena je [predlošku kolegija Programsko inženjerstvo](https://github.com/VladoSruk/Programsko-inzenjerstvo) autora Vlade Sruka. Izvorni citatni podaci nalaze se u [CITATION.cff](CITATION.cff), a prilagodbe i uporaba AI-ja opisane su u [Home.md](docs/Home.md#izjava-o-uporabi-umjetne-inteligencije).
+
+
+
+
+
+## SCRUM-16 – Postavljanje okruženja i deploy
+
+U sklopu zadatka postavljeno je produkcijsko okruženje za aplikaciju RentIt (tradeIt) koristeći GitHub, Render i Neon PostgreSQL.
+
+Frontend i backend objavljeni su kao zasebni servisi na Render platformi, a backend je povezan s Neon bazom podataka. Postavljene su potrebne varijable okruženja i izvršene migracije baze podataka.
+
+Implementiran je CI/CD proces pomoću GitHub Actions. Nakon slanja promjena na granu `SCRUM-16` automatski se pokreću backend i frontend testovi. Ako testovi uspješno prođu, pokreće se automatski deploy oba servisa na Render.
+
+Tijekom prvog pokušaja objavljivanja backend je završio s pogreškom `Timed Out`. Problem je riješen ponovnim ručnim deployem, nakon čega je uspješno potvrđen i sljedeći automatski deploy.
+
+Dodatno je testirana Google OAuth prijava na produkcijskoj verziji aplikacije i potvrđena je dostupnost backend API-ja i Swagger dokumentacije.
+
+**Rezultat:** CI/CD proces uspješno radi, testovi prolaze, a frontend i backend uspješno se automatski objavljuju na Renderu. Oba servisa imaju status `Live`.
+
+
+## Javne poveznice aplikacije
+
+- **Frontend:** https://tradeit-x2uy.onrender.com/
+- **Backend API:** https://rentit-backend-fl4c.onrender.com/
+- **API dokumentacija (Swagger):** https://rentit-backend-fl4c.onrender.com/docs
