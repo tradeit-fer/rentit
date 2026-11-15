@@ -1,4 +1,3 @@
-
 @startuml
 title Sustav TradeIt - slučajevi uporabe
 left to right direction
@@ -7,6 +6,9 @@ skinparam packageStyle rectangle
 skinparam shadowing false
 skinparam defaultFontName Arial
 skinparam ArrowColor #212529
+
+
+
 
 skinparam actor {
     BackgroundColor #F8F9FA
@@ -27,7 +29,7 @@ actor Admin as "Admin"
 User -|> Visitor
 Admin -|> User
 
-Admin -[hidden]down-> User
+User -[hidden]down-> Admin
 User -[hidden]down-> Visitor
 
 
