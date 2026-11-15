@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# 1. Učitavanje .env varijabli NA SAMOM VRHU prije bilo kakvog uvoza naših modula!
+# 1. Učitavanje .env varijabli prije bilo kakvog uvoza naših modula
 env_path = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(env_path)
 
@@ -13,7 +13,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from src.authorization import require_admin
 from src.controllers.auth import router as auth_router
 from src.controllers.listings import router as listings_router
-#from src.controllers.rentals import router as rentals_router  SOON
+from src.controllers.rentals import router as rentals_router
 from src.models.users import User
 
 app = FastAPI(

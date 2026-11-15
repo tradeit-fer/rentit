@@ -310,7 +310,7 @@ document.addEventListener("click", async (event) => {
               ${renderIcon("shield")}2. Redirect securely to your verification provider.
             </div>
             <div class="notice">
-              ${renderIcon("check")}3. Return to TradeIt with the verification result.
+              ${renderIcon("check")}3. Return to RentIt with the verification result.
             </div>
           </div>
           <p class="small mt20">This preview does not accept real identity documents.</p>
@@ -388,7 +388,7 @@ document.addEventListener("click", async (event) => {
       break;
     case "assistant":
       showModal(
-        /* HTML */ `${renderDialogHeading("Your TradeIt assistant")}
+        /* HTML */ `${renderDialogHeading("Your RentIt assistant")}
           <p>A local FAQ assistant for common questions.</p>
           <div id="assistant-conversation" class="stack">
             <div class="notice">
