@@ -5,7 +5,8 @@ from sqlalchemy.orm import Session
 from src.dependencies import get_db
 from src.schemas.error import ErrorResponse
 from src.schemas.listing import ListingCreate, ListingResponse
-from src.services import listing_service
+from src.services.listing_service import ListingService
+from src.services.exceptions import NotFoundError
 
 from src.services.session_service import get_current_user, verify_csrf
 
@@ -28,21 +29,21 @@ def get_listings(
     limit: int = Query(20, ge = 1, le = 100, description = "Broj stavki po stranici"),
     db: Session = Depends(get_db),
 ):
-    listings = listing_service.get_listings(
-            db=db,
-            category=category,
-            search=search,
-            lat=lat,
-            lng=lng,
-            radius=radius,
-            min_price=min_price,
-            max_price=max_price,
-            start_date=start_date,
-            end_date=end_date,
-            sort=sort,
-            page=page,
-            limit=limit,
-        )
+    service = ListingService(db)
+    listings = service.get_listings(
+        category=category,
+        search=search,
+        lat=lat,
+        lng=lng,
+        radius=radius,
+        min_price=min_price,
+        max_price=max_price,
+        start_date=start_date,
+        end_date=end_date,
+        sort=sort,
+        page=page,
+        limit=limit,
+    )
     return listings
 
 # GET /api/v2/listings/{listing_id} - detalji jednog oglasa
@@ -52,7 +53,7 @@ def get_listings(
     responses = {404: {"model": ErrorResponse}},
 )
 def get_listing(listing_id: int, db: Session = Depends(get_db)):
-    listing = listing_service.get_listing_by_id(db = db, listing_id = listing_id)
+    listing = ListingService(db).get_listing_by_id(listing_id)
     if not listing:
         raise HTTPException(
             status_code = status.HTTP_404_NOT_FOUND,
@@ -80,9 +81,12 @@ def create_listing(
     current_user = Depends(get_current_user),
     _csrf: None = Depends(verify_csrf),     # osiguravanje CSRF provjere
 ):
-    new_listing = listing_service.create_listing(
-        db = db,
-        listing_data = payload,
-        owner_id = current_user.id
-    )
+    service = ListingService(db)
+    try:
+        new_listing = service.create_listing(payload, current_user.id)
+    except NotFoundError as error:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=error.message,
+        )
     return new_listing
