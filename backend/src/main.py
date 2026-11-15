@@ -94,7 +94,7 @@ async def google_callback(request: Request, db: Session = Depends(get_db),):
       value=session_token,
       httponly=True,
       secure=True, #PODJSETNIK DA OVO MORAM MIJENJAT
-      samesite="lax",
+      samesite="none",
       max_age=int(SESSION_DURATION.total_seconds()),
       path="/",
    )
@@ -143,6 +143,8 @@ def logout(
    response.delete_cookie(
       key="rentit_session",
       path="/",
+      secure=True,
+      samesite="none",
    )
 
    response.headers["Cache-Control"] = "no-store"
