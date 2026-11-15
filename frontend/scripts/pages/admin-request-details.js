@@ -50,8 +50,6 @@ function renderAdminRequestDetailPage(id) {
 <br>10 October, 12:42 · attachment</p>
 </div>
 </div>
-<div class="notice mt20">${renderIcon("info")}<p>These are sample photos. The comparison does not establish that any real damage occurred.</p>
-</div>
 </div>
 <div class="card">
 <h3>Messages & notes</h3>
@@ -106,7 +104,6 @@ function renderAdminRequestDetailPage(id) {
 </textarea>
 </div>
 <button type="submit" class="btn wide">Record outcome ${renderIcon("check")}</button>
-<p class="state-line">This preview saves the outcome locally.</p>
 </form>
 <div class="card">
 <h4>Related rental</h4>
