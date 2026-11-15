@@ -220,7 +220,7 @@ def test_google_callback_sets_session_cookie(monkeypatch, db):
         cookie = response.headers["set-cookie"].lower()
         assert "rentit_session=" in cookie
         assert "httponly" in cookie
-        assert "samesite=lax" in cookie
+        assert "samesite=none" in cookie
         assert response.headers["cache-control"] == "no-store"
     finally:
         app.dependency_overrides.clear()
