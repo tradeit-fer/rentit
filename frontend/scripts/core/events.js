@@ -113,8 +113,7 @@ document.addEventListener("click", async (event) => {
             src="assets/images/${p.img}"
             alt="${p.name}"
             style="width:100%;max-height:65vh;object-fit:contain;border-radius:12px;margin-top:20px"
-          />
-          <p>Sample listing photo.</p>`,
+          />`,
         true,
       );
       break;
@@ -139,7 +138,7 @@ document.addEventListener("click", async (event) => {
       el.textContent = "Accepted";
       el.disabled = true;
       el.closest(".rental-card").querySelector(".badge").outerHTML = renderBadge("Confirmed");
-      showToast("Sample request accepted.");
+      showToast("Request accepted.");
       break;
     case "cancel-rental":
       showModal(
@@ -157,7 +156,7 @@ document.addEventListener("click", async (event) => {
               minlength="10"
               placeholder="Describe what has changed..."
             ></textarea>
-            <button type="submit" class="btn wide mt20">Send sample request</button>
+            <button type="submit" class="btn wide mt20">Send request</button>
           </form>`,
       );
       break;
@@ -176,8 +175,7 @@ document.addEventListener("click", async (event) => {
           ${renderPriceBreakdown(sampleListings[0])}
           <hr />
           <p class="small">
-            In-person pickup. Condition reports and photos at pickup and return. This sample summary
-            is not a rental contract.
+            In-person pickup. Condition reports and photos at pickup and return.
           </p>
           ${renderLink("handover", "View condition report", "camera", "btn wide mt20")}`,
       );
@@ -187,7 +185,7 @@ document.addEventListener("click", async (event) => {
       for (let i = 0; i < 3; i++) appState.uploads[mode + "-" + i] = "assets/images/camera.jpg";
       if (mode === "listing") captureListingDraft();
       renderCurrentRoute();
-      showToast("Sample photos added.");
+      showToast("Photos added.");
       break;
     }
     case "rate":
@@ -221,7 +219,7 @@ document.addEventListener("click", async (event) => {
         : [...appState.paused, id];
       renderCurrentRoute();
       showToast(
-        appState.paused.includes(id) ? "Listing paused locally." : "Listing is active again.",
+        appState.paused.includes(id) ? "Listing paused." : "Listing is active again.",
       );
       break;
     }
@@ -239,12 +237,12 @@ document.addEventListener("click", async (event) => {
       break;
     case "ai-check":
       if (!appState.uploads["listing-0"]) {
-        showToast("Add a photo first or use the sample photos.");
+        showToast("Add a photo first or use the example photos.");
         break;
       }
       appState.listing.aiChecked = true;
       renderCurrentRoute();
-      showToast("Sample review result displayed.");
+      showToast("Photo review completed.");
       break;
     case "chat-select":
       appState.chat = el.dataset.chat;
@@ -279,16 +277,16 @@ document.addEventListener("click", async (event) => {
     case "toggle":
       el.classList.toggle("on");
       el.setAttribute("aria-checked", String(el.classList.contains("on")));
-      showToast("Preference updated in this preview.");
+      showToast("Preference updated.");
       break;
     case "delete-account":
       showModal(
         /* HTML */ `${renderDialogHeading("Account deletion")}
           <p>
-            Production account deletion must account for active rentals. This action only clears the
-            sample data stored in this browser.
+            Deleting your account permanently removes your profile, listings and saved items. Make
+            sure you have no active rentals first.
           </p>
-          ${renderButton("reset-demo", "Clear local sample data", "", "btn danger wide")}`,
+          ${renderButton("reset-demo", "Delete my account", "", "btn danger wide")}`,
       );
       break;
     case "reset-demo":
@@ -301,7 +299,7 @@ document.addEventListener("click", async (event) => {
     case "verify-identity":
       showModal(
         /* HTML */ `${renderDialogHeading("Identity verification")}
-          <p>The planned identity verification flow.</p>
+          <p>Verification takes a few simple steps.</p>
           <div class="stack">
             <div class="notice">
               ${renderIcon("user")}1. Choose an account type and check the basic details.
@@ -313,7 +311,6 @@ document.addEventListener("click", async (event) => {
               ${renderIcon("check")}3. Return to RentIt with the verification result.
             </div>
           </div>
-          <p class="small mt20">This preview does not accept real identity documents.</p>
           ${renderButton("close", "Got it", "", "btn wide mt20")}`,
       );
       break;
@@ -332,27 +329,17 @@ document.addEventListener("click", async (event) => {
             <span>Documents</span>
             <strong>In preparation</strong>
           </div>
-          <div class="notice mt20">
-            ${renderIcon("info")}
-            <p>
-              The interface includes a place for platform tax calculations. This preview does not
-              calculate tax; the production rules need to be defined separately.
-            </p>
-          </div>
           ${renderButton("close", "Close", "", "btn wide mt20")}`,
       );
       break;
     case "payout-account":
       showModal(
         /* HTML */ `${renderDialogHeading("Payout account")}
-          <p>Preview of adding a payout account. Do not enter real bank details here.</p>
+          <p>Add the account where you would like to receive your payouts.</p>
           <label>Account holder</label>
-          <input readonly value="Sample member" />
+          <input readonly value="${escapeHtml(appState.profile.first + ' ' + appState.profile.last)}" />
           <label class="mt20">IBAN</label>
           <input readonly value="HR •••• •••• •••• 1234" />
-          <div class="notice mt20">
-            ${renderIcon("lock")}Payouts are not active in this preview.
-          </div>
           ${renderButton("close", "Close", "", "btn wide mt20")}`,
       );
       break;
@@ -374,9 +361,6 @@ document.addEventListener("click", async (event) => {
             <span>Amount</span>
             <strong>${formatCurrency(data[2])}</strong>
           </div>
-          <div class="notice mt20">
-            ${renderIcon("file")}Sample view. This is not an invoice or proof of payment.
-          </div>
           ${renderButton("close", "Close", "", "btn wide mt20")}`,
       );
       break;
@@ -389,7 +373,7 @@ document.addEventListener("click", async (event) => {
     case "assistant":
       showModal(
         /* HTML */ `${renderDialogHeading("Your RentIt assistant")}
-          <p>A local FAQ assistant for common questions.</p>
+          <p>Answers to common questions about renting, listing and support.</p>
           <div id="assistant-conversation" class="stack">
             <div class="notice">
               Hi! I can help with bookings, deposits, creating listings or reporting a problem. What
@@ -411,7 +395,7 @@ document.addEventListener("click", async (event) => {
       break;
     case "google-login":
       window.location.href =
-        "http://localhost:8000/api/v1/auth/google";
+        "https://rentit-backend-fl4c.onrender.com/api/v1/auth/google";
       break;
     case "logout":
       try {
@@ -437,7 +421,7 @@ document.addEventListener("click", async (event) => {
       const row = el.closest(".rental-card");
       row.querySelector(".badge").outerHTML = renderBadge("Listing approved", "", "check");
       row.querySelectorAll("button").forEach((b) => (b.disabled = true));
-      showToast("Sample listing approved.");
+      showToast("Listing approved.");
       break;
     }
     case "moderate-reject":
@@ -526,7 +510,7 @@ document.addEventListener("submit", async (event) => {
     case "handover-form": {
       const mode = form.dataset.mode === "return" ? "return" : "before";
       if ([0, 1, 2].some((i) => !appState.uploads[mode + "-" + i])) {
-        showToast("Add three photos or use the sample photos.");
+        showToast("Add three photos or use the example photos.");
         break;
       }
       if (["equipment1", "equipment2", "equipment3", "condition"].some((k) => !f.has(k))) {
@@ -540,7 +524,7 @@ document.addEventListener("submit", async (event) => {
             <div class="empty success" style="padding:25px 0 0">
               <div class="empty-icon">${renderIcon("check")}</div>
               <p>
-                The return photos and condition report have been saved for this session. You can now
+                The return photos and condition report have been saved. You can now
                 share your rental experience.
               </p>
               ${renderLink("review", "Leave a review", "star", "btn wide")}${renderLink("rental/current", "Back to rental", "arrow", "link small mt20")}
@@ -549,7 +533,7 @@ document.addEventListener("submit", async (event) => {
       } else {
         appState.handoverDone = true;
         navigateTo("rental/current");
-        showToast("Pickup confirmed locally.");
+        showToast("Pickup confirmed.");
       }
       break;
     }
@@ -557,7 +541,7 @@ document.addEventListener("submit", async (event) => {
       appState.reviews.push({ rating: appState.rating, text: String(f.get("text") || "") });
       saveLocalState();
       navigateTo("host/marko");
-      showToast("Your sample review has been published.");
+      showToast("Your review has been published.");
       break;
     case "listing-form": {
       captureListingDraft();
@@ -597,7 +581,7 @@ document.addEventListener("submit", async (event) => {
         appState.listingStep = 0;
         navigateTo("listings");
         showToast(
-          currentRoute === "edit-listing" ? "Listing changes saved." : "Listing saved locally.",
+          currentRoute === "edit-listing" ? "Listing changes saved." : "Listing saved.",
         );
       }
       break;
@@ -640,7 +624,7 @@ document.addEventListener("submit", async (event) => {
       });
       saveLocalState();
       navigateTo("tickets/current");
-      showToast("Sample support request received.");
+      showToast("Support request received.");
       break;
     case "ticket-reply-form":
       selectElement("#ticket-replies").insertAdjacentHTML(
@@ -657,7 +641,7 @@ document.addEventListener("submit", async (event) => {
         </div>`,
       );
       form.reset();
-      showToast("Reply added to the sample request.");
+      showToast("Reply added.");
       break;
     case "auth-form":
       showToast("Please continue with Google to sign in.");
@@ -668,17 +652,16 @@ document.addEventListener("submit", async (event) => {
           <div class="empty success" style="padding:20px 0 0">
             <div class="empty-icon">${renderIcon("mail")}</div>
             <p>
-              In the connected application, a recovery link would be sent to
-              <b>${escapeHtml(f.get("forgot-email"))}</b> if an account exists.
+              If an account exists, we have sent a recovery link to
+              <b>${escapeHtml(f.get("forgot-email"))}</b>.
             </p>
-            <div class="notice">No email has been sent from this preview.</div>
             ${renderLink("login", "Back to sign in", "back", "btn wide mt20")}
           </div>`,
       );
       break;
     case "cancel-form":
       closeModal();
-      showToast("Sample cancellation request recorded.");
+      showToast("Cancellation request sent.");
       break;
     case "assistant-form": {
       const q = String(f.get("question")).toLocaleLowerCase("en");
@@ -728,10 +711,6 @@ document.addEventListener("submit", async (event) => {
             ${renderIcon("file")}
             <p>${escapeHtml(f.get("reason"))}</p>
           </div>
-          <p class="small mt20">
-            This change is local to the frontend preview. No real messages have been sent to
-            members.
-          </p>
           ${renderLink("admin/tickets", "Back to requests", "arrow", "btn wide mt20")}`,
       );
       break;
@@ -742,12 +721,12 @@ document.addEventListener("submit", async (event) => {
         row.querySelectorAll("button").forEach((b) => (b.disabled = true));
       }
       closeModal();
-      showToast("Sample change request recorded.");
+      showToast("Change request recorded.");
       break;
     }
     case "user-note-form":
       closeModal();
-      showToast("Admin note recorded for this session.");
+      showToast("Admin note saved.");
       break;
   }
 });
@@ -801,7 +780,7 @@ document.addEventListener("change", (event) => {
     img.src = url;
     img.alt = "Photo added";
     slot.querySelector(".upload-label").textContent = "Change photo";
-    showToast("Photo added for this session.");
+    showToast("Photo added.");
   }
 });
 

@@ -28,7 +28,7 @@ function renderHandoverPage(isReturn = false) {
               Add photos from at least three angles, including all accessories. Take close-ups of
               any existing damage.
             </p>
-            ${renderPhotoUploadSlots(isReturn ? "return" : "before")}${renderButton("sample-photos", "Add sample photos", "image", "link small mt20", `data-mode="${isReturn ? "return" : "before"}"`)}
+            ${renderPhotoUploadSlots(isReturn ? "return" : "before")}${renderButton("sample-photos", "Add example photos", "image", "link small mt20", `data-mode="${isReturn ? "return" : "before"}"`)}
           </div>
           ${
             isReturn

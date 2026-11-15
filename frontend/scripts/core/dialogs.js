@@ -92,13 +92,6 @@ function openScreenNavigator() {
               </section>`,
           )
           .join("")}
-      </div>
-      <div class="notice mt28">
-        ${renderIcon("info")}
-        <p>
-          Interactive frontend with sample data. Actions stay in this browser. Payments,
-          authentication, AI checks and support services require backend integration.
-        </p>
       </div>`,
     true,
   );

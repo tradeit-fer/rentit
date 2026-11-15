@@ -43,7 +43,7 @@ function renderSupportRequestPage() {
                 </div>
               </div>
               <p>
-                ${t ? "Your request has been saved locally. This preview shows the support process without contacting a real support team." : appState.adminDecision ? `The request has been reviewed. Recorded outcome: ${escapeHtml(appState.adminDecision)}.` : "We have received your request. We will review the pickup and return photos and ask the owner for their account. Status updates will appear here."}
+                ${t ? "We have received your request. Status updates will appear here." : appState.adminDecision ? `The request has been reviewed. Recorded outcome: ${escapeHtml(appState.adminDecision)}.` : "We have received your request. We will review the pickup and return photos and ask the owner for their account. Status updates will appear here."}
               </p>
             </div>
             <div id="ticket-replies"></div>

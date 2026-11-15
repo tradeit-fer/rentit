@@ -76,10 +76,7 @@ function renderAdminDashboardPage() {
           ${renderLink("admin/tickets", "All requests", "arrow", "link")}
         </div>
         ${renderSupportRequestTable(adminTickets.slice(0, 3))}
-      </section>
-      <p class="state-line mt20">
-        Sample administration data. Member and admin views are available for frontend development.
-      </p>`,
+      </section>`,
     true,
   );
 }
