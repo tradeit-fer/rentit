@@ -37,7 +37,7 @@ app = FastAPI(
 # frontend origin
 origins = [
     "http://localhost:5500",
-   "https://tradeit-x2uy.onrender.com/"
+   "https://tradeit-x2uy.onrender.com"
 ]
 app.add_middleware(
    SessionMiddleware,
