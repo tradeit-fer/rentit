@@ -105,3 +105,11 @@ Struktura dokumentacije prilagođena je [predlošku kolegija Programsko inženje
 
 
 CI/CD pipeline provjera za SCRUM-16.
+
+## Live verzija
+
+- Frontend: https://tradeit-x2uy.onrender.com/
+- Backend API: https://rentit-backend-fl4c.onrender.com/
+- API dokumentacija (Swagger): https://rentit-backend-fl4c.onrender.com/docs
+
+Aplikacija se automatski objavljuje na Render nakon što prođu svi testovi u GitHub Actions.
