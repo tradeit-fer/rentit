@@ -36,9 +36,9 @@ app = FastAPI(
 
 # frontend origin
 origins = [
-    "http://localhost:5500"
+    "http://localhost:5500",
+   "https://tradeit-x2uy.onrender.com/"
 ]
-
 app.add_middleware(
    SessionMiddleware,
    secret_key=os.environ["SESSION_SECRET"],
@@ -93,7 +93,7 @@ async def google_callback(request: Request, db: Session = Depends(get_db),):
       key="rentit_session",
       value=session_token,
       httponly=True,
-      secure=False, #PODJSETNIK DA OVO MORAM MIJENJAT
+      secure=True, #PODJSETNIK DA OVO MORAM MIJENJAT
       samesite="lax",
       max_age=int(SESSION_DURATION.total_seconds()),
       path="/",
