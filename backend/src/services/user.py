@@ -34,4 +34,12 @@ class UserService:
             rating=rs.getRating(id),
             reviews_count=rs.getReviewCount(id),
         )
-    
+
+    def create(self, name: str, email: str, role: str) -> str:
+        user = User()
+        user.name = name
+        user.email = email
+        user.role = role
+        self.db.add(user)
+        self.db.commit()
+        return user.id

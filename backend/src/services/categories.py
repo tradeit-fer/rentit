@@ -48,3 +48,12 @@ class CategoryService:
             raise NotFoundError("Kategorija", name)
 
         return result[0]
+    
+    def create(self, category_name: str, parent_name: str) -> int:
+        parent_id = self.get_ID_by_name(parent_name)
+        category_row = Category()
+        category_row.name = category_name
+        category_row.parent_id = parent_id
+        self.db.add(category_row)
+        self.db.commit()
+        return category_row.id
