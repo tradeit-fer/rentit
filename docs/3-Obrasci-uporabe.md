@@ -62,8 +62,8 @@ Vanjski sustav može biti sekundarni akter obrasca uporabe kada sudjeluje u ostv
 | Primarni akter | Korisnik |
 | ID zahtjeva | F-001 |
 | Preduvjeti, ako postoje | Nema. |
-| Glavni tijek | Uspješna autentikacija povezuje isti vanjski identitet s jednim računom. Novi račun dobiva korisničku ulogu. Odjava poništava aplikacijsku sesiju. |
-| Alternativni ili neuspješni tijekovi, ako postoje | Neuspješna ili prekinuta prijava ne stvara prijavljenu sesiju. |
+| Glavni tijek | 1. Korisnik pokreće registraciju.<br>2. Uspješna autentikacija povezuje isti vanjski identitet s jednim računom.<br>3. Novi račun dobiva korisničku ulogu. |
+| Alternativni ili neuspješni tijekovi, ako postoje | Odjava poništava aplikacijsku sesiju. Neuspješna ili prekinuta prijava ne stvara prijavljenu sesiju. |
 | Rezultat | Korisnik je registriran. |
 
 
@@ -74,7 +74,7 @@ Vanjski sustav može biti sekundarni akter obrasca uporabe kada sudjeluje u ostv
 | Primarni akter | Korisnik |
 | ID zahtjeva | F-003 |
 | Preduvjeti, ako postoje | Korisnik registriran. |
-| Glavni tijek | Obvezni su naziv, vrsta ponude, kategorija, opis, fotografija fizičkog predmeta, cijena s jedinicom obračuna, lokacija i uvjeti korištenja. |
+| Glavni tijek |1. Korisnik pokreće akciju.<br>2. Korisnik ispunjuje oglas. (Obvezni su naziv, vrsta ponude, kategorija, opis, fotografija fizičkog predmeta, cijena s jedinicom obračuna, lokacija i uvjeti korištenja.)<br>3. Korisnik objavljuje oglas. |
 | Alternativni ili neuspješni tijekovi, ako postoje | Sustav odbija nepotpun unos uz poruku uz odgovarajuće polje.  |
 | Rezultat | Objava napravljena. |
 
@@ -96,11 +96,11 @@ Vanjski sustav može biti sekundarni akter obrasca uporabe kada sudjeluje u ostv
 | Polje | Opis |
 | --- | --- |
 | Primarni akter | Korisnik |
-| ID zahtjeva | F-004 |
+| ID zahtjeva | F-007 |
 | Preduvjeti, ako postoje | Korisnik registriran. |
-| Glavni tijek | Korisnik odabire termin i vidi izračun prema F-019 te uvjete koje potvrđuje prije slanja. Poslužitelj provjerava oglas, datume i raspoloživost. Vlastiti oglas i nevaljan termin nije moguće rezervirati. |
-| Alternativni ili neuspješni tijekovi, ako postoje | Ponovljeno slanje iste radnje ne stvara dodatni zahtjev.  |
-| Rezultat | Zahtjev poslan. |
+| Glavni tijek | 1. Korisnik odabire termin za najam i vidi izračun cijene te uvjete koje potvrđuje prije slanja.<br>2. Poslužitelj provjerava oglas, datume i raspoloživost te prihvaća odnosno odbija. |
+| Alternativni ili neuspješni tijekovi, ako postoje | Ponovljeno slanje iste radnje ne stvara dodatni zahtjev. Vlastiti oglas i nevaljan termin nije moguće rezervirati. |
+| Rezultat | Zahtjev prihvaćen ili odbijen. |
 
 **UC-005: Moderiranje oglasa**
 
@@ -109,7 +109,7 @@ Vanjski sustav može biti sekundarni akter obrasca uporabe kada sudjeluje u ostv
 | Primarni akter | Administrator |
 | ID zahtjeva | F-006 |
 | Preduvjeti, ako postoje | Administrator je prijavljen i ima administratorske ovlasti; postoji oglas koja čeka pregled. |
-| Glavni tijek | Oglas upućen na ručni pregled nije javno objavljen prije odluke. Odluka ima autora, vrijeme i razlog, a vlasnik vidi ishod. Uklanjanje oglasa čuva povijest postojećih najmova. Uredan oglas koji prođe predviđene provjere ne zahtijeva obvezno prethodno odobrenje administratora. |
+| Glavni tijek | 1. Administrator odabire oglas koji čeka pregled<br>2. Administrator odobri odnosno odbije oglas. |
 | Alternativni ili neuspješni tijekovi, ako postoje | - |
 | Rezultat | Prijava ima novi status ako je administratorska radnja uspješno provedena; inače ostaje nepromijenjena. |
 
