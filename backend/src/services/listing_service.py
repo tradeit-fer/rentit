@@ -6,9 +6,12 @@ from sqlalchemy.exc import IntegrityError
 from src.services.exceptions import PermissionDeniedError, ConflictError, NotFoundError
 from src.services.categories import CategoryService
 from src.services.user import UserService
+from src.services.rental_service import BLOCKING_RENTAL_STATUSES
 
 from src.models.listings import Listing
 from src.models.listing_location import ListingLocation
+from src.models.rental_request import RentalRequest
+from src.models.rentals import Rental
 
 from src.schemas.listing import OwnerInfo, ListingCreate
 
@@ -16,19 +19,6 @@ from src.schemas.listing import OwnerInfo, ListingCreate
 class ListingService:
     def __init__(self, db: Session):
         self.db = db
-
-
-    def getByCategory(self, category: str) -> list[Listing]:
-        ls = CategoryService(self.db)
-        categories = ls.get_with_descendants(category, True)
-
-        stmt = (sa.select(Listing).where(Listing.category.in_(categories)))
-
-        listings = list(self.db.scalars(stmt))
-
-        if listings is None:
-            raise NotFoundError("Oglasi u kategoriji", category)
-        return listings
 
     def getOwner(self, listingID: int) -> OwnerInfo:
         us = UserService(self.db)
@@ -118,8 +108,24 @@ class ListingService:
                     * sa.func.sin(sa.func.radians(ListingLocation.latitude))
                 )
                 stmt = stmt.where(distance_expr <= radius)
-    
-            # 5. Sortiranje rezultata
+
+            # 5. Filtriranje po vremenskoj dostupnosti
+            if start_date is not None and end_date is not None:
+                zauzeto = (
+                    sa.select(sa.literal(1))
+                    .select_from(RentalRequest)
+                    .join(Rental, Rental.request_id == RentalRequest.id)
+                    .where(
+                        RentalRequest.listing_id == Listing.id,
+                        Rental.status.in_(BLOCKING_RENTAL_STATUSES),
+                        RentalRequest.start_date < end_date,
+                        RentalRequest.end_date > start_date,
+                    )
+                    .exists()
+                )
+                stmt = stmt.where(~zauzeto)
+
+            # 6. Sortiranje rezultata
             if sort == "price_asc":
                 stmt = stmt.order_by(Listing.price_cents.asc())
             elif sort == "price_desc":
@@ -127,7 +133,7 @@ class ListingService:
             else:
                 stmt = stmt.order_by(Listing.id.desc())
     
-            # 6. Paginacija
+            # 7. Paginacija
             offset = (page - 1) * limit
             stmt = stmt.offset(offset).limit(limit)
     
