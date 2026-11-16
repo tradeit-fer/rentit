@@ -13,7 +13,11 @@ from src.services.session_service import get_current_user, verify_csrf
 router = APIRouter(prefix = "/api/v2/listings", tags = ["Listings"])
 
 # GET /api/v2/listings - svi oglasi + pretraga oglasa
-@router.get("", response_model = List[ListingResponse])
+@router.get(
+    "",
+    response_model = List[ListingResponse],
+    responses = {400: {"model": ErrorResponse}},
+)
 def get_listings(
     category: Optional[str] = Query(None, description = "Naziv kategorije"),
     search: Optional[str] = Query(None, description = "Pretraga po naslovu ili opisu"),
@@ -29,12 +33,11 @@ def get_listings(
     limit: int = Query(20, ge = 1, le = 100, description = "Broj stavki po stranici"),
     db: Session = Depends(get_db),
 ):
-
     # min_price mora biti manje od max_price
     if min_price is not None and max_price is not None and min_price > max_price:
         raise HTTPException(
             status_code=422,
-            detail={
+            detail = {
                 "code": "UNPROCESSABLE_ENTITY",
                 "message": "Minimum price cannot be greater than maximum price.",
             },
@@ -44,7 +47,7 @@ def get_listings(
     if (lat is None) != (lng is None):
         raise HTTPException(
             status_code=422,
-            detail={
+            detail = {
                 "code": "UNPROCESSABLE_ENTITY",
                 "message": "Latitude and longitude must be provided together.",
             },
@@ -53,29 +56,37 @@ def get_listings(
     # radius nema smisla bez tocke
     if radius is not None and lat is None:
         raise HTTPException(
-            status_code = 422,
+            status_code=422,
             detail = {
                 "code": "UNPROCESSABLE_ENTITY",
                 "message": "Radius requires latitude and longitude.",
             },
         )
 
-
     service = ListingService(db)
-    listings = service.get_listings(
-        category=category,
-        search=search,
-        lat=lat,
-        lng=lng,
-        radius=radius,
-        min_price=min_price,
-        max_price=max_price,
-        start_date=start_date,
-        end_date=end_date,
-        sort=sort,
-        page=page,
-        limit=limit,
-    )
+    try:
+        listings = service.get_listings(
+            category=category,
+            search=search,
+            lat=lat,
+            lng=lng,
+            radius=radius,
+            min_price=min_price,
+            max_price=max_price,
+            start_date=start_date,
+            end_date=end_date,
+            sort=sort,
+            page=page,
+            limit=limit,
+        )
+    except NotFoundError as error:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail = {
+                "code": "BAD_REQUEST",
+                "message": error.message,
+            },
+        )
     return listings
 
 # GET /api/v2/listings/{listing_id} - detalji jednog oglasa
@@ -88,7 +99,7 @@ def get_listing(listing_id: int, db: Session = Depends(get_db)):
     listing = ListingService(db).get_listing_by_id(listing_id)
     if not listing:
         raise HTTPException(
-            status_code = status.HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail = {
                 "code": "NOT_FOUND",
                 "message": f"Oglas s ID-jem {listing_id} nije pronađen."
@@ -119,6 +130,9 @@ def create_listing(
     except NotFoundError as error:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=error.message,
+            detail = {
+                "code": "BAD_REQUEST",
+                "message": error.message,
+            },
         )
     return new_listing
