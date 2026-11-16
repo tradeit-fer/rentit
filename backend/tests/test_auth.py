@@ -182,6 +182,7 @@ def test_google_identity_creates_user_and_provider_mapping(db):
     from src.services.auth import get_or_create_google_user
     from src.models.users import User
     from src.models.external_identities import ExternalIdentity
+    from src.models.user_profiles import UserProfile
     db.scalar.side_effect = [None, None]
     user, is_new = get_or_create_google_user(db, {"sub": "google-123", "email": "X@Example.com", "email_verified": True, "name": "Example"})
     assert is_new is True
@@ -190,18 +191,40 @@ def test_google_identity_creates_user_and_provider_mapping(db):
     added = [call.args[0] for call in db.add.call_args_list]
     assert any(isinstance(obj, User) for obj in added)
     assert any(isinstance(obj, ExternalIdentity) and obj.user_id == user.id and obj.provider_subject == "google-123" for obj in added)
+    assert any(isinstance(obj, UserProfile) and obj.user_id == user.id for obj in added)
     db.commit.assert_called_once()
 
 
 def test_google_identity_reuses_existing_account(db):
     from src.services.auth import get_or_create_google_user
-    existing_user = SimpleNamespace(id="u1", is_active=True)
+    from src.models.user_profiles import UserProfile
+    existing_user = SimpleNamespace(id="u1", is_active=True, name="Test User", profile=None)
     db.scalar.return_value = SimpleNamespace(user_id="u1")
     db.get.return_value = existing_user
     user, is_new = get_or_create_google_user(db, {"sub": "google-123", "email": "x@example.com", "email_verified": True})
     assert user is existing_user
     assert is_new is False
-    db.commit.assert_not_called()
+    assert any(isinstance(call.args[0], UserProfile) for call in db.add.call_args_list)
+    db.commit.assert_called_once()
+
+
+def test_profile_endpoint_returns_stored_contact_fields(db):
+    from src.controllers.user_profiles import get_my_profile
+
+    user = SimpleNamespace(id="u1", email="test@example.com", name="Test User", role="user")
+    db.scalar.return_value = SimpleNamespace(
+        display_name="Test User",
+        phone="+385 91 123 4567",
+        city="Zagreb",
+        bio="Pozdrav",
+        avatar_key=None,
+    )
+
+    response = get_my_profile(user, db)
+
+    assert response.phone == "+385 91 123 4567"
+    assert response.city == "Zagreb"
+    assert response.bio == "Pozdrav"
 
 
 def test_google_callback_sets_session_cookie(monkeypatch, db):

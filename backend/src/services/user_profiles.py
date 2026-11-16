@@ -1,18 +1,14 @@
-import sqlalchemy as sa
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from services.exceptions import PermissionDeniedError, ConflictError, NotFoundError
-
-from models.user_profiles import UserProfile
+from src.models.user_profiles import UserProfile
 
 class UserProfileService:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_user_profile(self, user_id: int) -> UserProfile:
-        self.db = self.db.query(UserProfile).filter(UserProfile.user_id == user_id).first()
-        if not self.db:
-            raise PermissionDeniedError()
-        return self.db
-
-    #def create(self, user_profile: UserProfile) -> UserProfile:
+    # dohvat profila iz baze
+    def get_user_profile(self, user_id: str) -> UserProfile | None:
+        return self.db.scalar(
+            select(UserProfile).where(UserProfile.user_id == user_id)
+        )

@@ -17,6 +17,8 @@ class UserProfile(Base):
     )
 
     display_name: Mapped[str | None] = mapped_column(String(255))
+    phone: Mapped[str | None] = mapped_column(String(50))
+    city: Mapped[str | None] = mapped_column(String(255))
     bio: Mapped[str | None] = mapped_column(Text)
     avatar_key: Mapped[str | None] = mapped_column(String(255))
 
