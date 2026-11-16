@@ -36,14 +36,21 @@ app = FastAPI(
 
 # frontend origin
 origins = [
-    "http://localhost:5500",
-   "https://tradeit-x2uy.onrender.com"
+    origin.strip()
+    for origin in (
+        os.getenv("CORS_ORIGINS") or os.environ["FRONTEND_URL"]
+    ).split(",")
+    if origin.strip()
 ]
+
+session_cookie_secure = os.getenv("SESSION_COOKIE_SECURE", "true").lower() == "true"
+session_cookie_samesite = os.getenv("SESSION_COOKIE_SAMESITE", "none").lower()
+oauth_session_cookie_secure = os.getenv("OAUTH_SESSION_COOKIE_SECURE", "false").lower() == "true"
 app.add_middleware(
    SessionMiddleware,
    secret_key=os.environ["SESSION_SECRET"],
    same_site="lax",
-   https_only=False,
+   https_only=oauth_session_cookie_secure,
 )
 
 app.add_middleware(
@@ -93,8 +100,8 @@ async def google_callback(request: Request, db: Session = Depends(get_db),):
       key="rentit_session",
       value=session_token,
       httponly=True,
-      secure=True, #PODJSETNIK DA OVO MORAM MIJENJAT
-      samesite="none",
+      secure=session_cookie_secure,
+      samesite=session_cookie_samesite,
       max_age=int(SESSION_DURATION.total_seconds()),
       path="/",
    )
@@ -143,8 +150,8 @@ def logout(
    response.delete_cookie(
       key="rentit_session",
       path="/",
-      secure=True,
-      samesite="none",
+      secure=session_cookie_secure,
+      samesite=session_cookie_samesite,
    )
 
    response.headers["Cache-Control"] = "no-store"

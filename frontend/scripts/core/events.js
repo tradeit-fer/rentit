@@ -4,6 +4,7 @@
  */
 "use strict";
 
+
 document.addEventListener("click", async (event) => {
   // The skip link moves focus without changing the hash route.
   if (event.target.closest(".skip-link")) {
@@ -395,7 +396,7 @@ document.addEventListener("click", async (event) => {
       break;
     case "google-login":
       window.location.href =
-        "https://rentit-backend-fl4c.onrender.com/api/v1/auth/google";
+        `${API_URL}/api/v1/auth/google`;
       break;
     case "logout":
       try {
