@@ -8,7 +8,6 @@ import pytest #biblioteka za automatsko testiranje u pythonu. Prepoznaje funkcij
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
-import src.controllers.auth
 
 
 os.environ.setdefault("DATABASE_URL", "sqlite://")

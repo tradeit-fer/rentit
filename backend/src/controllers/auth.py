@@ -90,7 +90,7 @@ def get_csrf_token(
     }
 
 
-@app.post("/logout")
+@router.post("/logout")
 def logout(
    response: Response,
    session: AuthSession = Depends(verify_csrf),
