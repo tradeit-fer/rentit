@@ -1,3 +1,5 @@
+from datetime import date
+
 import sqlalchemy as sa
 from sqlalchemy import select, join
 from sqlalchemy.orm import Session, joinedload
@@ -14,6 +16,31 @@ from src.models.rental_request import RentalRequest
 from src.models.rentals import Rental
 
 from src.schemas.listing import OwnerInfo, ListingCreate
+
+
+EARTH_RADIUS_KM = 6371.0
+
+
+def distance_km(lat: float, lng: float):
+    # udaljenost u km od točke (lat, lng) do lokacije oglasa (haversine formula)
+    # računa se u bazi da se može filtrirati prije paginacije
+    listing_lat = sa.cast(ListingLocation.latitude, sa.Float)
+    listing_lng = sa.cast(ListingLocation.longitude, sa.Float)
+
+    half_dlat = sa.func.radians(listing_lat - lat) / 2
+    half_dlng = sa.func.radians(listing_lng - lng) / 2
+
+    a = (
+        sa.func.pow(sa.func.sin(half_dlat), 2)
+        + sa.func.cos(sa.func.radians(lat))
+        * sa.func.cos(sa.func.radians(listing_lat))
+        * sa.func.pow(sa.func.sin(half_dlng), 2)
+    )
+
+    # zbog zaokruživanja a zna biti malo veći od 1, pa asin pukne
+    a = sa.case((a > 1.0, 1.0), else_=a)
+
+    return 2 * EARTH_RADIUS_KM * sa.func.asin(sa.func.sqrt(a))
 
 
 class ListingService:
@@ -58,8 +85,8 @@ class ListingService:
             radius: float | None = None,
             min_price: int | None = None,
             max_price: int | None = None,
-            start_date: str | None = None,
-            end_date: str | None = None,
+            start_date: date | None = None,
+            end_date: date | None = None,
             sort: str | None = None,
             page: int = 1,
             limit: int = 20,
@@ -95,19 +122,14 @@ class ListingService:
             if max_price is not None:
                 stmt = stmt.where(Listing.price_cents <= max_price)
     
-            # 4. Geolokacijsko filtriranje u radijusu (km)
-            if lat is not None and lng is not None and radius is not None:
-                earth_radius_km = 6371.0
-                distance_expr = earth_radius_km * sa.func.acos(
-                    sa.func.cos(sa.func.radians(lat))
-                    * sa.func.cos(sa.func.radians(ListingLocation.latitude))
-                    * sa.func.cos(
-                        sa.func.radians(ListingLocation.longitude) - sa.func.radians(lng)
-                    )
-                    + sa.func.sin(sa.func.radians(lat))
-                    * sa.func.sin(sa.func.radians(ListingLocation.latitude))
-                )
-                stmt = stmt.where(distance_expr <= radius)
+            # 4. Udaljenost od točke (lat, lng) i filtriranje u radijusu (km)
+            # udaljenost se računa čim je zadana točka, radius je opcionalan
+            has_point = lat is not None and lng is not None
+            if has_point:
+                distance = distance_km(lat, lng)
+                stmt = stmt.add_columns(distance)
+                if radius is not None:
+                    stmt = stmt.where(distance <= radius)
 
             # 5. Filtriranje po vremenskoj dostupnosti
             if start_date is not None and end_date is not None:
@@ -126,18 +148,31 @@ class ListingService:
                 stmt = stmt.where(~zauzeto)
 
             # 6. Sortiranje rezultata
+            # Listing.id je uvijek zadnji kriterij da redoslijed bude stabilan kod paginacije
             if sort == "price_asc":
-                stmt = stmt.order_by(Listing.price_cents.asc())
+                stmt = stmt.order_by(Listing.price_cents.asc(), Listing.id.desc())
             elif sort == "price_desc":
-                stmt = stmt.order_by(Listing.price_cents.desc())
+                stmt = stmt.order_by(Listing.price_cents.desc(), Listing.id.desc())
+            elif sort == "distance" and has_point:
+                # oglasi bez koordinata idu na kraj
+                stmt = stmt.order_by(distance.asc().nulls_last(), Listing.id.desc())
             else:
-                stmt = stmt.order_by(Listing.id.desc())
+                # zadano i "newest": najnoviji prvi
+                stmt = stmt.order_by(Listing.created_at.desc(), Listing.id.desc())
     
             # 7. Paginacija
             offset = (page - 1) * limit
             stmt = stmt.offset(offset).limit(limit)
     
-            return list(self.db.scalars(stmt).unique())
+            if not has_point:
+                return list(self.db.scalars(stmt).unique())
+
+            # s točkom je svaki red (oglas, udaljenost)
+            listings = []
+            for listing, km in self.db.execute(stmt).unique():
+                listing.distance = round(km, 1) if km is not None else None
+                listings.append(listing)
+            return listings
 
     def get_listing_by_id(self, listing_id: int) -> Listing | None:
             stmt = (
@@ -150,4 +185,4 @@ class ListingService:
                 .where(Listing.id == listing_id)
             )
             return self.db.scalar(stmt)
-
+    

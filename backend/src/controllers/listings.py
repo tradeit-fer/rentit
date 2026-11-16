@@ -1,4 +1,5 @@
-from typing import List, Optional
+from datetime import date
+from typing import List, Literal, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
@@ -26,9 +27,11 @@ def get_listings(
     radius: Optional[float] = Query(None, gt = 0, description = "Radijus pretrage u kilometrima"),
     min_price: Optional[int] = Query(None, ge = 0, description = "Minimalna cijena u centima"),
     max_price: Optional[int] = Query(None, ge = 0, description = "Maksimalna cijena u centima"),
-    start_date: Optional[str] = Query(None, description = "Početak najma (YYYY-MM-DD)"),
-    end_date: Optional[str] = Query(None, description = "Kraj najma (YYYY-MM-DD)"),
-    sort: Optional[str] = Query(None, description = "Sortiranje rezultata"),
+    start_date: Optional[date] = Query(None, description = "Početak najma (YYYY-MM-DD)"),
+    end_date: Optional[date] = Query(None, description = "Kraj najma (YYYY-MM-DD)"),
+    sort: Optional[Literal["price_asc", "price_desc", "distance", "newest"]] = Query(
+        None, description = "Sortiranje: price_asc, price_desc, distance (traži lat i lng), newest (zadano)"
+    ),
     page: int = Query(1, ge = 1, description = "Broj stranice"),
     limit: int = Query(20, ge = 1, le = 100, description = "Broj stavki po stranici"),
     db: Session = Depends(get_db),
@@ -60,6 +63,36 @@ def get_listings(
             detail = {
                 "code": "UNPROCESSABLE_ENTITY",
                 "message": "Radius requires latitude and longitude.",
+            },
+        )
+
+    # sortiranje po udaljenosti nema smisla bez tocke
+    if sort == "distance" and lat is None:
+        raise HTTPException(
+            status_code=422,
+            detail = {
+                "code": "UNPROCESSABLE_ENTITY",
+                "message": "Sorting by distance requires latitude and longitude.",
+            },
+        )
+
+    # start_date i end_date moraju doci zajedno
+    if (start_date is None) != (end_date is None):
+        raise HTTPException(
+            status_code=422,
+            detail = {
+                "code": "UNPROCESSABLE_ENTITY",
+                "message": "Start date and end date must be provided together.",
+            },
+        )
+
+    # start_date ne smije biti nakon end_date
+    if start_date is not None and end_date is not None and start_date > end_date:
+        raise HTTPException(
+            status_code=422,
+            detail = {
+                "code": "UNPROCESSABLE_ENTITY",
+                "message": "Start date cannot be after end date.",
             },
         )
 
