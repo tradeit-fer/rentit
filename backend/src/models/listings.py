@@ -6,6 +6,7 @@ from sqlalchemy import (
     ForeignKey,
     Identity,
     Index,
+    JSON,
     Integer,
     String,
     Text,
@@ -23,6 +24,10 @@ class Listing(Base):
         CheckConstraint(
             "price_cents >= 0",
             name="ck_listings_price_cents",
+        ),
+        CheckConstraint(
+            "deposit_cents >= 0",
+            name="ck_listings_deposit_cents",
         ),
         Index("idx_listings_owner_id", "owner_id"),
         Index("idx_listings_category_id", "category_id"),
@@ -46,6 +51,14 @@ class Listing(Base):
     description: Mapped[str | None] = mapped_column(Text)
 
     price_cents: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    deposit_cents: Mapped[int] = mapped_column(
+        Integer, nullable=False, server_default="0"
+    )
+
+    tags: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    features: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    images: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
 
     status: Mapped[str] = mapped_column(
         String(50),

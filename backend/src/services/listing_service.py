@@ -3,15 +3,14 @@ from sqlalchemy import select, join
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import IntegrityError
 
-from services.exceptions import PermissionDeniedError, ConflictError, NotFoundError
-from services.categories import CategoryService
-from services.user import UserService
+from src.services.exceptions import PermissionDeniedError, ConflictError, NotFoundError
+from src.services.categories import CategoryService
+from src.services.user import UserService
 
-from models.listings import Listing
 from src.models.listings import Listing
 from src.models.listing_location import ListingLocation
 
-from schemas.listing import OwnerInfo, ListingCreate
+from src.schemas.listing import OwnerInfo, ListingCreate
 
 
 class ListingService:
@@ -38,22 +37,27 @@ class ListingService:
             raise NotFoundError("Oglas", listingID)
         return us.getOwnerByID(listing.owner_id)
 
-    def create(self, listing: ListingCreate, owner_ID: str) -> Listing:
-            cs = CategoryService(self.db)
-    
-            listing_row = Listing()
-            listing_row.title = listing.title
-            listing_row.description = listing.description
-            listing_row.owner_id = owner_ID
-            listing_row.category_id = cs.get_ID_by_name(listing.category)
-            listing_row.price_cents = listing.price_per_day
-    
+    def create_listing(self, listing: ListingCreate, owner_ID: str) -> Listing:
+        category_id = CategoryService(self.db).get_ID_by_name(listing.category)
+        listing_row = Listing(
+            title=listing.title,
+            description=listing.description,
+            owner_id=owner_ID,
+            category_id=category_id,
+            price_cents=listing.price_per_day,
+            deposit_cents=listing.deposit,
+            location=ListingLocation(public_location=listing.location),
+            tags=listing.tags,
+            features=listing.features,
+            images=listing.images,
+        )
+        try:
             self.db.add(listing_row)
             self.db.commit()
-            self.db.refresh(listing_row)
-    
-            # Vraćamo oglas preko get_listing_by_id da se učitaju sve relacije za ListingResponse
-            return self.get_listing_by_id(listing_row.id)
+        except Exception:
+            self.db.rollback()
+            raise
+        return self.get_listing_by_id(listing_row.id)
 
     def get_listings(
             self,
@@ -74,8 +78,8 @@ class ListingService:
                 sa.select(Listing)
                 .outerjoin(ListingLocation, Listing.id == ListingLocation.listing_id)
                 .options(
-                    joinedload(Listing.category_rel),
-                    joinedload(Listing.location_rel),
+                    joinedload(Listing.category),
+                    joinedload(Listing.location),
                     joinedload(Listing.owner),
                 )
             )
@@ -133,10 +137,11 @@ class ListingService:
             stmt = (
                 sa.select(Listing)
                 .options(
-                    joinedload(Listing.category_rel),
-                    joinedload(Listing.location_rel),
+                    joinedload(Listing.category),
+                    joinedload(Listing.location),
                     joinedload(Listing.owner),
                 )
                 .where(Listing.id == listing_id)
             )
             return self.db.scalar(stmt)
+

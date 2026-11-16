@@ -22,7 +22,7 @@ class LocationORM(BaseModel):
 # vlasnik oglasa
 class OwnerInfo(BaseModel):
     id: str         # u bazi je ownerID String(255)
-    full_name: str
+    full_name: str = Field(validation_alias="name")
     rating: float = 5.0 # defaultna vrijednost ratinga je 5.0
     reviews_count: int = 0
 
@@ -33,12 +33,13 @@ class OwnerInfo(BaseModel):
 class ListingCreate(BaseModel):
     title: str = Field(..., example = "Bušilica Bosch")
     description: Optional[str] = Field(None, example= "Aku bušilica s dvije baterije.")
-    price_per_day: int = Field(..., example = 500)    # cijena u centima
-    deposit: int = Field(..., example = 2000)           # polog u centima
+    price_per_day: int = Field(..., ge=0, example = 500)    # cijena u centima
+    deposit: int = Field(..., ge=0, example = 2000)           # polog u centima
     category: str = Field(..., example = "Alati")  
     location: str = Field(..., example = "Zagreb, Trešnjevka")  
-    tags: List[str] = Field(default = [], example = ["faks", "matematika"])
-    features: List[str] = Field(default = [], example = ["Baterije uključene"])
+    tags: List[str] = Field(default_factory=list, example = ["faks", "matematika"])
+    features: List[str] = Field(default_factory=list, example = ["Baterije uključene"])
+    images: List[str] = Field(default_factory=list, example = ["https://example.com/slika.jpg"])
 
 # backend vraća klijentu (GET /api/v2/listings i POST /api/v2/listings)
 class ListingResponse(BaseModel):
@@ -47,13 +48,13 @@ class ListingResponse(BaseModel):
     description: Optional[str] = None
 
     price_per_day: int = Field(..., alias = "price_cents")
-    deposit: int = Field(default = 0)
+    deposit: int = Field(default = 0, validation_alias="deposit_cents")
     currency: str = "EUR"
 
     distance: Optional[float] = None
-    tags: List[str] = []
-    features: List[str] = []
-    images: List[str] = []
+    tags: List[str] = Field(default_factory=list)
+    features: List[str] = Field(default_factory=list)
+    images: List[str] = Field(default_factory=list)
     created_at: datetime
     owner: OwnerInfo
 
