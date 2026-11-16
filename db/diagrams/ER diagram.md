@@ -48,6 +48,10 @@ erDiagram
         string title
         string description
         int price_cents
+        int deposit_cents
+        list[str] tags
+        list[str] features
+        list[str] images
         string status
         timestamp created_at
         timestamp updated_at
