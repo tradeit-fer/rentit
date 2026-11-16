@@ -8,6 +8,8 @@ import pytest #biblioteka za automatsko testiranje u pythonu. Prepoznaje funkcij
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
+import src.controllers.auth
+
 
 os.environ.setdefault("DATABASE_URL", "sqlite://")
 os.environ.setdefault("SESSION_SECRET", "test-only-secret")
@@ -20,6 +22,7 @@ from src.dependencies import get_db
 from src.services import session_service
 from src.services.session_service import get_current_session, get_current_user, verify_csrf
 from src.authorization import require_admin
+from src.controllers import auth
 #src.main ce zahtijevati sve environ varijable pa ih uzimamo odmah na pocetku
 
 @pytest.fixture #za pojasnjenje osobi koja se bude pitala, ovo je funkcija koja priprema podatek ili objekte potrebne testovima
@@ -206,11 +209,11 @@ def test_google_callback_sets_session_cookie(monkeypatch, db):
     from unittest.mock import AsyncMock
     from src import main
 
-    monkeypatch.setattr(main.oauth.google, "authorize_access_token", AsyncMock(return_value={
+    monkeypatch.setattr(auth.oauth.google, "authorize_access_token", AsyncMock(return_value={
         "userinfo": {"sub": "google-123", "email": "test@example.com", "email_verified": True}
     }))
-    monkeypatch.setattr(main, "get_or_create_google_user", lambda db, google_user: (SimpleNamespace(id="u1"), False))
-    monkeypatch.setattr(main, "create_session", lambda db, user_id: ("test-session-token", "csrf-token"))
+    monkeypatch.setattr(auth, "get_or_create_google_user", lambda db, google_user: (SimpleNamespace(id="u1"), False))
+    monkeypatch.setattr(auth, "create_session", lambda db, user_id: ("test-session-token", "csrf-token"))
     app.dependency_overrides[get_db] = lambda: db
     try:
         with TestClient(app, follow_redirects=False) as client:

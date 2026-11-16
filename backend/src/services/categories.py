@@ -3,8 +3,8 @@ from sqlalchemy import select, join
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from services.exceptions import PermissionDeniedError, ConflictError, NotFoundError
-from models.categories import Category
+from src.services.exceptions import PermissionDeniedError, ConflictError, NotFoundError
+from src.models.categories import Category
 
 from typing import Literal, overload
 
