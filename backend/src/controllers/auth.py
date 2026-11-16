@@ -21,17 +21,20 @@ from src.services.session_service import (
 # Zadržavamo /api/v1/auth da ostane usklađeno s Google Cloud Console redirect URI-jem
 router = APIRouter(prefix="/api/v1/auth", tags=["Auth"])
 
+session_cookie_secure = os.getenv("SESSION_COOKIE_SECURE", "true").lower() == "true"
+session_cookie_samesite = os.getenv("SESSION_COOKIE_SAMESITE", "none").lower()
+
 oauth = OAuth()
 oauth.register(
-    name="google",
-    client_id=os.environ["GOOGLE_CLIENT_ID"],
-    client_secret=os.environ["GOOGLE_CLIENT_SECRET"],
-    server_metadata_url=(
-        "https://accounts.google.com/.well-known/openid-configuration"
-    ),
-    client_kwargs={
-        "scope": "openid email profile"
-    },
+   name="google",
+   client_id=os.environ["GOOGLE_CLIENT_ID"],
+   client_secret=os.environ["GOOGLE_CLIENT_SECRET"],
+   server_metadata_url=(
+      "https://accounts.google.com/.well-known/openid-configuration"
+   ),
+   client_kwargs={
+      "scope": "openid email profile"
+   },
 )
 
 @router.get("/google")
@@ -48,19 +51,19 @@ async def google_callback(request: Request, db: Session = Depends(get_db)):
     session_token, csrf_token = create_session(db, user.id)
 
     response = RedirectResponse(
-        url=os.environ["FRONTEND_URL"],
-        status_code=303,
-    )
+      url=os.environ["FRONTEND_URL"],
+      status_code=303,
+   )
 
     response.set_cookie(
-        key="rentit_session",
-        value=session_token,
-        httponly=True,
-        secure=True,
-        samesite="none",
-        max_age=int(SESSION_DURATION.total_seconds()),
-        path="/",
-    )
+      key="rentit_session",
+      value=session_token,
+      httponly=True,
+      secure=session_cookie_secure,
+      samesite=session_cookie_samesite,
+      max_age=int(SESSION_DURATION.total_seconds()),
+      path="/",
+   )
 
     response.headers["Cache-Control"] = "no-store"
     return response
@@ -86,18 +89,25 @@ def get_csrf_token(
         "csrf_token": csrf_token
     }
 
+
 @router.post("/logout")
 def logout(
-    response: Response,
-    session: AuthSession = Depends(verify_csrf),
-    db: Session = Depends(get_db),
+   response: Response,
+   session: AuthSession = Depends(verify_csrf),
+   db: Session = Depends(get_db),
 ):
-    revoke_session(db, session)
-    response.delete_cookie(
-        key="rentit_session",
-        path="/",
-    )
-    response.headers["Cache-Control"] = "no-store"
-    return {
-        "message": "Successfully logged out"
-    }
+
+   revoke_session(db, session)
+
+   response.delete_cookie(
+      key="rentit_session",
+      path="/",
+      secure=session_cookie_secure,
+      samesite=session_cookie_samesite,
+   )
+
+   response.headers["Cache-Control"] = "no-store"
+
+   return{
+      "message": "Succesfully logged out"
+   }

@@ -24,15 +24,21 @@ app = FastAPI(
 
 # Frontend adrese kojima je dopušten pristup API-ju
 origins = [
-    "http://localhost:5500",
-    "https://tradeit-x2uy.onrender.com",
+    origin.strip()
+    for origin in (
+        os.getenv("CORS_ORIGINS") or os.environ["FRONTEND_URL"]
+    ).split(",")
+    if origin.strip()
 ]
 
+session_cookie_secure = os.getenv("SESSION_COOKIE_SECURE", "true").lower() == "true"
+session_cookie_samesite = os.getenv("SESSION_COOKIE_SAMESITE", "none").lower()
+oauth_session_cookie_secure = os.getenv("OAUTH_SESSION_COOKIE_SECURE", "false").lower() == "true"
 app.add_middleware(
-    SessionMiddleware,
-    secret_key=os.environ["SESSION_SECRET"],
-    same_site="lax",
-    https_only=False,
+   SessionMiddleware,
+   secret_key=os.environ["SESSION_SECRET"],
+   same_site="lax",
+   https_only=oauth_session_cookie_secure,
 )
 
 app.add_middleware(
@@ -47,6 +53,7 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(listings_router)
 app.include_router(rentals_router)
+
 
 
 @app.get("/")

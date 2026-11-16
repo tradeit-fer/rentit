@@ -1,4 +1,5 @@
 import hashlib
+import os
 import secrets
 
 from datetime import datetime, timedelta, timezone
@@ -15,7 +16,7 @@ from src.models.users import User
 
 from fastapi import Depends, Header, HTTPException
 
-SESSION_DURATION = timedelta(days=7)
+SESSION_DURATION = timedelta(days=int(os.getenv("SESSION_DURATION_DAYS", "7")))
 
 def hash_token(token: str) -> str:
    return hashlib.sha256(
