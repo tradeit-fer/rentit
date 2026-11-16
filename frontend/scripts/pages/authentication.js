@@ -5,7 +5,7 @@
 "use strict";
 
 /**
- * Render the authentication screen using the shared TradeIt design system.
+ * Render the authentication screen using the shared RentIt design system.
  * @param {*} mode See docs/ARCHITECTURE.md for data flow and page variants.
  * @returns {string} HTML for this view.
  */
@@ -23,7 +23,7 @@ function renderAuthenticationPage(mode = "login") {
           ${renderAvatar("ana")}
           <div>
             <h4>“Exactly what I need. Just when I need it.”</h4>
-            <p class="small">Ana · TradeIt community member · example profile</p>
+            <p class="small">Ana · RentIt community member</p>
           </div>
         </div>
       </section>
@@ -33,7 +33,7 @@ function renderAuthenticationPage(mode = "login") {
             forgot
               ? /* HTML */ `<div class="empty-icon green mb20">${renderIcon("lock")}</div>
                   <h1>Forgot your password?</h1>
-                  <p>It happens. Enter your email to preview the account recovery flow.</p>
+                  <p>It happens. Enter your email and we will send you a link to reset your password.</p>
                   <form id="forgot-form">
                     ${renderInputField("Email address", "forgot-email", "", "email", 'required placeholder="name@example.com"')}<button
                       class="btn wide"
@@ -42,7 +42,6 @@ function renderAuthenticationPage(mode = "login") {
                       Continue ${renderIcon("arrow")}
                     </button>
                   </form>
-                  <p class="state-line mt20">No email is sent from this preview.</p>
                   ${renderLink("login", "Back to sign in", "back", "link small mt28")}`
               : /* HTML */ `<h1>
                     ${isRegister ? "Join a good circle." : "Good to see you again."}

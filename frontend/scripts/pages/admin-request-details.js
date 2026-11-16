@@ -5,7 +5,7 @@
 "use strict";
 
 /**
- * Render the admin request details screen using the shared TradeIt design system.
+ * Render the admin request details screen using the shared RentIt design system.
  * @param {*} id See docs/ARCHITECTURE.md for data flow and page variants.
  * @returns {string} HTML for this view.
  */
@@ -49,8 +49,6 @@ function renderAdminRequestDetailPage(id) {
 <b>Photo from the request</b>
 <br>10 October, 12:42 · attachment</p>
 </div>
-</div>
-<div class="notice mt20">${renderIcon("info")}<p>These are sample photos. The comparison does not establish that any real damage occurred.</p>
 </div>
 </div>
 <div class="card">
@@ -106,7 +104,6 @@ function renderAdminRequestDetailPage(id) {
 </textarea>
 </div>
 <button type="submit" class="btn wide">Record outcome ${renderIcon("check")}</button>
-<p class="state-line">This preview saves the outcome locally.</p>
 </form>
 <div class="card">
 <h4>Related rental</h4>

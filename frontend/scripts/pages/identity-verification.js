@@ -5,7 +5,7 @@
 "use strict";
 
 /**
- * Render the identity verification screen using the shared TradeIt design system.
+ * Render the identity verification screen using the shared RentIt design system.
  * @returns {string} HTML for this view.
  */
 function renderVerificationPage() {
@@ -30,12 +30,7 @@ function renderVerificationPage() {
           <div class="card">
             <div class="between">
               <h3>Member identity</h3>
-              ${renderBadge("Sample view", "gray")}
             </div>
-            <p class="small mt12">
-              Identity verification needs a connected provider. Do not upload real identity
-              documents to this frontend preview.
-            </p>
             <div class="panel mt20">
               <div class="flex">
                 ${renderIcon("shield")}

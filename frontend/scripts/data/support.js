@@ -11,7 +11,7 @@ const faqs = [
   ],
   [
     "What is the refundable deposit for?",
-    "The deposit is separate from the rental price. Its amount and terms should be clear before you confirm. This frontend preview does not charge or hold any funds.",
+    "The deposit is separate from the rental price. Its amount and terms should be clear before you confirm.",
   ],
   [
     "Why take photos before and after a rental?",
@@ -31,7 +31,7 @@ const faqs = [
   ],
   [
     "How are fees and taxes displayed?",
-    "The interface separates the rental price, platform fee and refundable deposit. A production tax model and payment processing must be specified and implemented in the backend.",
+    "The rental price, platform fee and refundable deposit are shown separately before you confirm.",
   ],
 ];
 

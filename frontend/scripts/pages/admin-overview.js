@@ -5,7 +5,7 @@
 "use strict";
 
 /**
- * Render the admin overview screen using the shared TradeIt design system.
+ * Render the admin overview screen using the shared RentIt design system.
  * @returns {string} HTML for this view.
  */
 function renderAdminDashboardPage() {
@@ -76,10 +76,7 @@ function renderAdminDashboardPage() {
           ${renderLink("admin/tickets", "All requests", "arrow", "link")}
         </div>
         ${renderSupportRequestTable(adminTickets.slice(0, 3))}
-      </section>
-      <p class="state-line mt20">
-        Sample administration data. Member and admin views are available for frontend development.
-      </p>`,
+      </section>`,
     true,
   );
 }

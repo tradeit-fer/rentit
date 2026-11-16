@@ -5,7 +5,7 @@
 "use strict";
 
 /**
- * Render the support request screen using the shared TradeIt design system.
+ * Render the support request screen using the shared RentIt design system.
  * @returns {string} HTML for this view.
  */
 function renderSupportRequestPage() {
@@ -38,12 +38,12 @@ function renderSupportRequestPage() {
               <div class="host-mini">
                 <span class="avatar" style="background:#e3edd5;color:#52713c">T</span>
                 <div>
-                  <h4>TradeIt support</h4>
+                  <h4>RentIt support</h4>
                   <p>${t ? "Automatic acknowledgement" : "10 October · 14:10"}</p>
                 </div>
               </div>
               <p>
-                ${t ? "Your request has been saved locally. This preview shows the support process without contacting a real support team." : appState.adminDecision ? `The request has been reviewed. Recorded outcome: ${escapeHtml(appState.adminDecision)}.` : "We have received your request. We will review the pickup and return photos and ask the owner for their account. Status updates will appear here."}
+                ${t ? "We have received your request. Status updates will appear here." : appState.adminDecision ? `The request has been reviewed. Recorded outcome: ${escapeHtml(appState.adminDecision)}.` : "We have received your request. We will review the pickup and return photos and ask the owner for their account. Status updates will appear here."}
               </p>
             </div>
             <div id="ticket-replies"></div>

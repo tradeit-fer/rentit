@@ -5,7 +5,7 @@
 "use strict";
 
 /**
- * Render the booking screen using the shared TradeIt design system.
+ * Render the booking screen using the shared RentIt design system.
  * @param {*} id See docs/ARCHITECTURE.md for data flow and page variants.
  * @returns {string} HTML for this view.
  */
@@ -52,15 +52,8 @@ function renderBookingPage(id) {
                 ${renderIcon("lock")}
               </div>
               <label class="check-label">
-                <input type="radio" checked name="pay-method" />Example card · Visa •••• 4242</label
+                <input type="radio" checked name="pay-method" />Visa •••• 4242</label
               >
-              <div class="notice mt20">
-                ${renderIcon("info")}
-                <p>
-                  This frontend preview does not collect payments or card details. Prices, fees and
-                  rental terms shown here are sample data.
-                </p>
-              </div>
             </div>
             <div class="card">
               <h3>Clear expectations from the start.</h3>
@@ -83,7 +76,6 @@ function renderBookingPage(id) {
             <hr />
             <div id="costs">${renderPriceBreakdown(p, days)}</div>
             <button type="submit" class="btn wide mt20">Send request ${renderIcon("arrow")}</button>
-            <p class="state-line">No payment is collected in this preview.</p>
             ${renderLink("product/" + p.id, "Back to listing", "back", "link small mt20")}
           </aside>
         </form>

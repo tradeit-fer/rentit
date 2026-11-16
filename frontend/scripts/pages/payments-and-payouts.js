@@ -5,7 +5,7 @@
 "use strict";
 
 /**
- * Render the payments and payouts screen using the shared TradeIt design system.
+ * Render the payments and payouts screen using the shared RentIt design system.
  * @returns {string} HTML for this view.
  */
 function renderPaymentsPage() {
@@ -22,7 +22,7 @@ function renderPaymentsPage() {
           </div>
           <div class="card-num">•••• •••• •••• 4242</div>
           <div class="between">
-            <span class="small">EXAMPLE CARD</span>
+            <span class="small">CARD</span>
             <span class="small">12/28</span>
           </div>
         </div>
@@ -41,7 +41,6 @@ function renderPaymentsPage() {
       <section class="section-card mt28">
         <div class="section-card-head">
           <h3>Transaction history</h3>
-          ${renderBadge("Sample amounts", "gray")}
         </div>
         <div class="table-scroll">
           <table>
@@ -84,13 +83,6 @@ function renderPaymentsPage() {
             </tbody>
           </table>
         </div>
-      </section>
-      <div class="notice mt20">
-        ${renderIcon("info")}
-        <p>
-          Financial screens use sample data. Real charges, payouts and tax calculations require
-          backend integration.
-        </p>
-      </div>`,
+      </section>`,
   );
 }
