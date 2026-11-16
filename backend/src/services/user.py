@@ -3,12 +3,12 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from services.exceptions import PermissionDeniedError, ConflictError, NotFoundError
-from services.reviews import ReviewService
+from src.services.exceptions import PermissionDeniedError, ConflictError, NotFoundError
+from src.services.reviews import ReviewService
 
-from models.users import User
+from src.models.users import User
 
-from schemas.listing import OwnerInfo
+from src.schemas.listing import OwnerInfo
 
 class UserService:
     def __init__(self, db: Session):

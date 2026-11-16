@@ -3,33 +3,22 @@ from sqlalchemy import select, join
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import IntegrityError
 
-from services.exceptions import PermissionDeniedError, ConflictError, NotFoundError
-from services.categories import CategoryService
-from services.user import UserService
+from src.services.exceptions import PermissionDeniedError, ConflictError, NotFoundError
+from src.services.categories import CategoryService
+from src.services.user import UserService
+from src.services.rental_service import BLOCKING_RENTAL_STATUSES
 
-from models.listings import Listing
 from src.models.listings import Listing
 from src.models.listing_location import ListingLocation
+from src.models.rental_request import RentalRequest
+from src.models.rentals import Rental
 
-from schemas.listing import OwnerInfo, ListingCreate
+from src.schemas.listing import OwnerInfo, ListingCreate
 
 
 class ListingService:
     def __init__(self, db: Session):
         self.db = db
-
-
-    def getByCategory(self, category: str) -> list[Listing]:
-        ls = CategoryService(self.db)
-        categories = ls.get_with_descendants(category, True)
-
-        stmt = (sa.select(Listing).where(Listing.category.in_(categories)))
-
-        listings = list(self.db.scalars(stmt))
-
-        if listings is None:
-            raise NotFoundError("Oglasi u kategoriji", category)
-        return listings
 
     def getOwner(self, listingID: int) -> OwnerInfo:
         us = UserService(self.db)
@@ -38,22 +27,27 @@ class ListingService:
             raise NotFoundError("Oglas", listingID)
         return us.getOwnerByID(listing.owner_id)
 
-    def create(self, listing: ListingCreate, owner_ID: str) -> Listing:
-            cs = CategoryService(self.db)
-    
-            listing_row = Listing()
-            listing_row.title = listing.title
-            listing_row.description = listing.description
-            listing_row.owner_id = owner_ID
-            listing_row.category_id = cs.get_ID_by_name(listing.category)
-            listing_row.price_cents = listing.price_per_day
-    
+    def create_listing(self, listing: ListingCreate, owner_ID: str) -> Listing:
+        category_id = CategoryService(self.db).get_ID_by_name(listing.category)
+        listing_row = Listing(
+            title=listing.title,
+            description=listing.description,
+            owner_id=owner_ID,
+            category_id=category_id,
+            price_cents=listing.price_per_day,
+            deposit_cents=listing.deposit,
+            location=ListingLocation(public_location=listing.location),
+            tags=listing.tags,
+            features=listing.features,
+            images=listing.images,
+        )
+        try:
             self.db.add(listing_row)
             self.db.commit()
-            self.db.refresh(listing_row)
-    
-            # Vraćamo oglas preko get_listing_by_id da se učitaju sve relacije za ListingResponse
-            return self.get_listing_by_id(listing_row.id)
+        except Exception:
+            self.db.rollback()
+            raise
+        return self.get_listing_by_id(listing_row.id)
 
     def get_listings(
             self,
@@ -74,8 +68,8 @@ class ListingService:
                 sa.select(Listing)
                 .outerjoin(ListingLocation, Listing.id == ListingLocation.listing_id)
                 .options(
-                    joinedload(Listing.category_rel),
-                    joinedload(Listing.location_rel),
+                    joinedload(Listing.category),
+                    joinedload(Listing.location),
                     joinedload(Listing.owner),
                 )
             )
@@ -114,8 +108,24 @@ class ListingService:
                     * sa.func.sin(sa.func.radians(ListingLocation.latitude))
                 )
                 stmt = stmt.where(distance_expr <= radius)
-    
-            # 5. Sortiranje rezultata
+
+            # 5. Filtriranje po vremenskoj dostupnosti
+            if start_date is not None and end_date is not None:
+                zauzeto = (
+                    sa.select(sa.literal(1))
+                    .select_from(RentalRequest)
+                    .join(Rental, Rental.request_id == RentalRequest.id)
+                    .where(
+                        RentalRequest.listing_id == Listing.id,
+                        Rental.status.in_(BLOCKING_RENTAL_STATUSES),
+                        RentalRequest.start_date < end_date,
+                        RentalRequest.end_date > start_date,
+                    )
+                    .exists()
+                )
+                stmt = stmt.where(~zauzeto)
+
+            # 6. Sortiranje rezultata
             if sort == "price_asc":
                 stmt = stmt.order_by(Listing.price_cents.asc())
             elif sort == "price_desc":
@@ -123,7 +133,7 @@ class ListingService:
             else:
                 stmt = stmt.order_by(Listing.id.desc())
     
-            # 6. Paginacija
+            # 7. Paginacija
             offset = (page - 1) * limit
             stmt = stmt.offset(offset).limit(limit)
     
@@ -133,10 +143,11 @@ class ListingService:
             stmt = (
                 sa.select(Listing)
                 .options(
-                    joinedload(Listing.category_rel),
-                    joinedload(Listing.location_rel),
+                    joinedload(Listing.category),
+                    joinedload(Listing.location),
                     joinedload(Listing.owner),
                 )
                 .where(Listing.id == listing_id)
             )
             return self.db.scalar(stmt)
+

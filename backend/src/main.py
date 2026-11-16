@@ -1,40 +1,28 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request, Depends, Response
-from starlette.middleware.sessions import SessionMiddleware
-from authlib.integrations.starlette_client import OAuth
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
-from sqlalchemy import text
-from src.dependencies import get_db # dohvaćanje sesije baze podataka
 
-from src.services.auth import get_or_create_google_user
-from src.services.session_service import create_session, SESSION_DURATION
-from src.models.users import User
-from src.services.session_service import get_current_user
-from src.models.auth_sessions import AuthSession
-from src.services.session_service import (
-    get_current_session,
-    rotate_csrf_token,
-)
-from src.services.session_service import (
-    verify_csrf,
-    revoke_session,
-)
-from src.authorization import require_admin
-from fastapi.responses import RedirectResponse
-
+# Učitavanje .env datoteke prije uvoza aplikacije
 env_path = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(env_path)
+
+from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.sessions import SessionMiddleware
+
+from src.authorization import require_admin
+from src.controllers.auth import router as auth_router
+from src.controllers.listings import router as listings_router
+from src.controllers.rentals import router as rentals_router
+from src.models.users import User
 
 app = FastAPI(
     title="RentIt API",
     description="API specifikacija za RentIt web aplikaciju",
-    version="1.0.0"
+    version="2.0.0",
 )
 
-# frontend origin
+# Frontend adrese kojima je dopušten pristup API-ju
 origins = [
     origin.strip()
     for origin in (
@@ -55,35 +43,16 @@ app.add_middleware(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins = origins,
-    allow_credentials = True,   # dopušteno slanje osjetljivih autentifikacijskih podataka
-    allow_methods = ["*"],    # dopuštene GET, PUT, PATCH, POST, DELETE,...
-    allow_headers = ["*"],  # dopušteni Authorization, Content-Type, itd...
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-oauth = OAuth()
-
-oauth.register(
-   name="google",
-   client_id=os.environ["GOOGLE_CLIENT_ID"],
-   client_secret=os.environ["GOOGLE_CLIENT_SECRET"],
-   server_metadata_url=(
-      "https://accounts.google.com/.well-known/openid-configuration"
-   ),
-   client_kwargs={
-      "scope": "openid email profile"
-   },
-)
-
-@app.get("/api/v1/auth/google")
-async def google_login(request: Request):
-   redirect_uri = request.url_for("google_callback")
-
-   return await oauth.google.authorize_redirect(request, redirect_uri)
-
-@app.get("/api/v1/auth/google/callback")
-async def google_callback(request: Request, db: Session = Depends(get_db),):
-   token = await oauth.google.authorize_access_token(request)
+# Registracija ruta
+app.include_router(auth_router)
+app.include_router(listings_router)
+app.include_router(rentals_router)
 
    google_user = token["userinfo"]
 
@@ -112,23 +81,7 @@ async def google_callback(request: Request, db: Session = Depends(get_db),):
 
 @app.get("/")
 def home():
-    return {
-        "message": "Backend radi!"
-    }
-
-@app.get("/api/v1/auth/me")
-def get_me(
-   user: User = Depends(get_current_user),
-):
-   return {
-      "id": user.id,
-      "name": user.name,
-      "email": user.email,
-      "role": user.role,
-   }
-
-@app.get("/api/v1/auth/csrf")
-def get_csrf_token(response: Response, session: AuthSession = Depends(get_current_session), db: Session = Depends(get_db),):
+    return {"message": "Backend radi!"}
 
    csrf_token = rotate_csrf_token(db, session)
 
@@ -161,8 +114,8 @@ def logout(
    }
 
 @app.get("/api/v1/admin/test")
-def admin_test(admin: User = Depends(require_admin),):
-   return {
-      "message": "Welcome, administrator!",
-      "user_id": admin.id,
-   }
+def admin_test(admin: User = Depends(require_admin)):
+    return {
+        "message": "Welcome, administrator!",
+        "user_id": admin.id,
+    }

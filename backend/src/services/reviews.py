@@ -3,9 +3,9 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from services.exceptions import PermissionDeniedError, ConflictError, NotFoundError
+from src.services.exceptions import PermissionDeniedError, ConflictError, NotFoundError
 
-from models.reviews import Review
+from src.models.reviews import Review
 
 class ReviewService:
     def __init__(self, db: Session):
