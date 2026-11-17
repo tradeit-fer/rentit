@@ -44,9 +44,7 @@ const authService = {
   },
 
   async logout() {
-    if (!this.csrfToken) {
-      await this.getCsrfToken();
-    }
+    await this.getCsrfToken();
 
     const response = await fetch(`${API_URL}/api/v1/auth/logout`, {
       method: "POST",
