@@ -4,7 +4,6 @@
  */
 "use strict";
 
-
 document.addEventListener("click", async (event) => {
   // The skip link moves focus without changing the hash route.
   if (event.target.closest(".skip-link")) {
@@ -62,6 +61,16 @@ document.addEventListener("click", async (event) => {
     case "screens":
       openScreenNavigator();
       break;
+    case "toggle-screen-navigator": {
+      screenNavigatorCollapsed = !screenNavigatorCollapsed;
+      const navigator = el.closest(".screen-navigator");
+      navigator?.classList.toggle("is-collapsed", screenNavigatorCollapsed);
+      el.setAttribute("aria-expanded", String(!screenNavigatorCollapsed));
+      el.setAttribute("aria-label", screenNavigatorCollapsed ? "Show All screens button" : "Hide All screens button");
+      const arrow = el.querySelector("span");
+      if (arrow) arrow.textContent = screenNavigatorCollapsed ? "›" : "‹";
+      break;
+    }
     case "close":
       closeModal();
       break;
@@ -83,7 +92,9 @@ document.addEventListener("click", async (event) => {
         });
       }
       showToast(
-        appState.saved.includes(id) ? "Listing saved for later." : "Listing removed from saved.",
+        appState.saved.includes(id)
+          ? "Listing saved for later."
+          : "Listing removed from saved.",
       );
       break;
     }
@@ -127,7 +138,11 @@ document.addEventListener("click", async (event) => {
         showModal(
           /* HTML */ `${renderDialogHeading("Share listing")}
             <p>Copy this link.</p>
-            <input value="${escapeHtml(location.href)}" readonly aria-label="Listing link" />`,
+            <input
+              value="${escapeHtml(location.href)}"
+              readonly
+              aria-label="Listing link"
+            />`,
         );
       }
       break;
@@ -138,15 +153,16 @@ document.addEventListener("click", async (event) => {
     case "accept-rental":
       el.textContent = "Accepted";
       el.disabled = true;
-      el.closest(".rental-card").querySelector(".badge").outerHTML = renderBadge("Confirmed");
+      el.closest(".rental-card").querySelector(".badge").outerHTML =
+        renderBadge("Confirmed");
       showToast("Request accepted.");
       break;
     case "cancel-rental":
       showModal(
         /* HTML */ `${renderDialogHeading("Request cancellation")}
           <p>
-            This rental has already started. Describe your reason so the owner and support team can
-            consider a change to the agreement.
+            This rental has already started. Describe your reason so the owner
+            and support team can consider a change to the agreement.
           </p>
           <form id="cancel-form">
             <label for="cancel-reason">Cancellation reason</label>
@@ -178,12 +194,18 @@ document.addEventListener("click", async (event) => {
           <p class="small">
             In-person pickup. Condition reports and photos at pickup and return.
           </p>
-          ${renderLink("handover", "View condition report", "camera", "btn wide mt20")}`,
+          ${renderLink(
+            "handover",
+            "View condition report",
+            "camera",
+            "btn wide mt20",
+          )}`,
       );
       break;
     case "sample-photos": {
       const mode = el.dataset.mode;
-      for (let i = 0; i < 3; i++) appState.uploads[mode + "-" + i] = "assets/images/camera.jpg";
+      for (let i = 0; i < 3; i++)
+        appState.uploads[mode + "-" + i] = "assets/images/camera.jpg";
       if (mode === "listing") captureListingDraft();
       renderCurrentRoute();
       showToast("Photos added.");
@@ -192,8 +214,14 @@ document.addEventListener("click", async (event) => {
     case "rate":
       appState.rating = Number(el.dataset.rating);
       selectElements('[data-action="rate"]').forEach((b) => {
-        b.classList.toggle("selected", Number(b.dataset.rating) <= appState.rating);
-        b.setAttribute("aria-pressed", String(Number(b.dataset.rating) === appState.rating));
+        b.classList.toggle(
+          "selected",
+          Number(b.dataset.rating) <= appState.rating,
+        );
+        b.setAttribute(
+          "aria-pressed",
+          String(Number(b.dataset.rating) === appState.rating),
+        );
       });
       selectElement("#rating-label").textContent = [
         "",
@@ -208,7 +236,11 @@ document.addEventListener("click", async (event) => {
       let p = el.dataset.id.startsWith("own-")
         ? appState.ownListings[Number(el.dataset.id.slice(4))]
         : findListing(el.dataset.id);
-      prefillListingDraft({ ...p, id: el.dataset.id, img: p.img || "camera.jpg" });
+      prefillListingDraft({
+        ...p,
+        id: el.dataset.id,
+        img: p.img || "camera.jpg",
+      });
       appState.listingStep = 0;
       navigateTo("edit-listing");
       break;
@@ -220,7 +252,9 @@ document.addEventListener("click", async (event) => {
         : [...appState.paused, id];
       renderCurrentRoute();
       showToast(
-        appState.paused.includes(id) ? "Listing paused." : "Listing is active again.",
+        appState.paused.includes(id)
+          ? "Listing paused."
+          : "Listing is active again.",
       );
       break;
     }
@@ -251,11 +285,15 @@ document.addEventListener("click", async (event) => {
       break;
     case "host-reviews":
       selectElement("#profile-reviews").innerHTML = renderSampleReviews();
-      el.parentElement.querySelectorAll(".tab").forEach((b) => b.classList.remove("active"));
+      el.parentElement
+        .querySelectorAll(".tab")
+        .forEach((b) => b.classList.remove("active"));
       el.classList.add("active");
       break;
     case "renter-reviews":
-      selectElement("#profile-reviews").innerHTML = /* HTML */ `<div class="review-block">
+      selectElement("#profile-reviews").innerHTML = /* HTML */ `<div
+        class="review-block"
+      >
         <div class="host-mini">
           ${renderAvatar("ana")}
           <div>
@@ -264,11 +302,13 @@ document.addEventListener("click", async (event) => {
           </div>
         </div>
         <p>
-          Pickup and return exactly as agreed. The equipment came back clean and tidy. A great
-          experience!
+          Pickup and return exactly as agreed. The equipment came back clean and
+          tidy. A great experience!
         </p>
       </div>`;
-      el.parentElement.querySelectorAll(".tab").forEach((b) => b.classList.remove("active"));
+      el.parentElement
+        .querySelectorAll(".tab")
+        .forEach((b) => b.classList.remove("active"));
       el.classList.add("active");
       break;
     case "settings-tab":
@@ -284,10 +324,15 @@ document.addEventListener("click", async (event) => {
       showModal(
         /* HTML */ `${renderDialogHeading("Account deletion")}
           <p>
-            Deleting your account permanently removes your profile, listings and saved items. Make
-            sure you have no active rentals first.
+            Deleting your account permanently removes your profile, listings and
+            saved items. Make sure you have no active rentals first.
           </p>
-          ${renderButton("reset-demo", "Delete my account", "", "btn danger wide")}`,
+          ${renderButton(
+            "reset-demo",
+            "Delete my account",
+            "",
+            "btn danger wide",
+          )}`,
       );
       break;
     case "reset-demo":
@@ -303,13 +348,16 @@ document.addEventListener("click", async (event) => {
           <p>Verification takes a few simple steps.</p>
           <div class="stack">
             <div class="notice">
-              ${renderIcon("user")}1. Choose an account type and check the basic details.
+              ${renderIcon("user")}1. Choose an account type and check the basic
+              details.
             </div>
             <div class="notice">
-              ${renderIcon("shield")}2. Redirect securely to your verification provider.
+              ${renderIcon("shield")}2. Redirect securely to your verification
+              provider.
             </div>
             <div class="notice">
-              ${renderIcon("check")}3. Return to RentIt with the verification result.
+              ${renderIcon("check")}3. Return to RentIt with the verification
+              result.
             </div>
           </div>
           ${renderButton("close", "Got it", "", "btn wide mt20")}`,
@@ -324,7 +372,10 @@ document.addEventListener("click", async (event) => {
             <strong>148.00 €</strong>
           </div>
           <div class="cost-row">
-            <span>Tax calculation status</span>${renderBadge("Awaiting calculation", "amber")}
+            <span>Tax calculation status</span>${renderBadge(
+              "Awaiting calculation",
+              "amber",
+            )}
           </div>
           <div class="cost-row">
             <span>Documents</span>
@@ -338,7 +389,7 @@ document.addEventListener("click", async (event) => {
         /* HTML */ `${renderDialogHeading("Payout account")}
           <p>Add the account where you would like to receive your payouts.</p>
           <label>Account holder</label>
-          <input readonly value="${escapeHtml(appState.profile.first + ' ' + appState.profile.last)}" />
+          <input readonly value="${escapeHtml(getFullName())}" />
           <label class="mt20">IBAN</label>
           <input readonly value="HR •••• •••• •••• 1234" />
           ${renderButton("close", "Close", "", "btn wide mt20")}`,
@@ -377,8 +428,8 @@ document.addEventListener("click", async (event) => {
           <p>Answers to common questions about renting, listing and support.</p>
           <div id="assistant-conversation" class="stack">
             <div class="notice">
-              Hi! I can help with bookings, deposits, creating listings or reporting a problem. What
-              would you like to know?
+              Hi! I can help with bookings, deposits, creating listings or
+              reporting a problem. What would you like to know?
             </div>
           </div>
           <form id="assistant-form" class="chat-input" style="padding:18px 0 0">
@@ -395,23 +446,26 @@ document.addEventListener("click", async (event) => {
       );
       break;
     case "google-login":
-      window.location.href =
-        `${API_URL}/api/v1/auth/google`;
+      window.location.href = `${API_URL}/api/v1/auth/google`;
       break;
     case "logout":
       try {
-          await authService.logout();
-          navigateTo("login");
-          showToast("Successfully logged out.");
+        await authService.logout();
+        setSignedOut();
+        navigateTo("login");
+        showToast("Successfully logged out.");
       } catch (error) {
-          console.error(error);
-          showToast("Logout failed. Please try again.");
+        console.error(error);
+        showToast("Logout failed. Please try again.");
       }
       break;
     case "password": {
       const p = selectElement("#auth-password");
       p.type = p.type === "password" ? "text" : "password";
-      el.setAttribute("aria-label", p.type === "password" ? "Show password" : "Hide password");
+      el.setAttribute(
+        "aria-label",
+        p.type === "password" ? "Show password" : "Hide password",
+      );
       break;
     }
     case "admin-filter":
@@ -420,7 +474,11 @@ document.addEventListener("click", async (event) => {
       break;
     case "moderate-approve": {
       const row = el.closest(".rental-card");
-      row.querySelector(".badge").outerHTML = renderBadge("Listing approved", "", "check");
+      row.querySelector(".badge").outerHTML = renderBadge(
+        "Listing approved",
+        "",
+        "check",
+      );
       row.querySelectorAll("button").forEach((b) => (b.disabled = true));
       showToast("Listing approved.");
       break;
@@ -438,7 +496,9 @@ document.addEventListener("click", async (event) => {
               minlength="10"
               placeholder="For example: Add a photo showing all accessories listed in the description."
             ></textarea>
-            <button type="submit" class="btn wide mt20">Record change request</button>
+            <button type="submit" class="btn wide mt20">
+              Record change request
+            </button>
           </form>`,
       );
       break;
@@ -450,19 +510,42 @@ document.addEventListener("click", async (event) => {
             <span>Account type</span>
             <strong>Registered member</strong>
           </div>
-          <div class="cost-row"><span>Status</span>${renderBadge("Active")}</div>
-          <div class="cost-row"><span>Identity</span>${renderBadge("Confirmed", "", "shield")}</div>
+          <div class="cost-row">
+            <span>Status</span>${renderBadge("Active")}
+          </div>
+          <div class="cost-row">
+            <span>Identity</span>${renderBadge("Confirmed", "", "shield")}
+          </div>
           <hr />
-          ${renderLink("host/marko", "View public profile", "user", "btn light wide")}${renderButton("user-warning", "Add admin note", "file", "link small mt20", `data-name="${escapeHtml(el.dataset.name)}"`)}`,
+          ${renderLink(
+            "host/marko",
+            "View public profile",
+            "user",
+            "btn light wide",
+          )}${renderButton(
+            "user-warning",
+            "Add admin note",
+            "file",
+            "link small mt20",
+            `data-name="${escapeHtml(el.dataset.name)}"`,
+          )}`,
       );
       break;
     case "user-warning":
       showModal(
         /* HTML */ `${renderDialogHeading("Admin note")}
-          <p>Member: ${escapeHtml(el.dataset.name)}. This note is not publicly visible.</p>
+          <p>
+            Member: ${escapeHtml(el.dataset.name)}. This note is not publicly
+            visible.
+          </p>
           <form id="user-note-form">
             <label for="user-note">Note</label>
-            <textarea id="user-note" name="note" required minlength="10"></textarea>
+            <textarea
+              id="user-note"
+              name="note"
+              required
+              minlength="10"
+            ></textarea>
             <button type="submit" class="btn wide mt20">Save note</button>
           </form>`,
       );
@@ -514,7 +597,11 @@ document.addEventListener("submit", async (event) => {
         showToast("Add three photos or use the example photos.");
         break;
       }
-      if (["equipment1", "equipment2", "equipment3", "condition"].some((k) => !f.has(k))) {
+      if (
+        ["equipment1", "equipment2", "equipment3", "condition"].some(
+          (k) => !f.has(k),
+        )
+      ) {
         showToast("Check the equipment and tick every confirmation.");
         break;
       }
@@ -525,10 +612,20 @@ document.addEventListener("submit", async (event) => {
             <div class="empty success" style="padding:25px 0 0">
               <div class="empty-icon">${renderIcon("check")}</div>
               <p>
-                The return photos and condition report have been saved. You can now
-                share your rental experience.
+                The return photos and condition report have been saved. You can
+                now share your rental experience.
               </p>
-              ${renderLink("review", "Leave a review", "star", "btn wide")}${renderLink("rental/current", "Back to rental", "arrow", "link small mt20")}
+              ${renderLink(
+                "review",
+                "Leave a review",
+                "star",
+                "btn wide",
+              )}${renderLink(
+                "rental/current",
+                "Back to rental",
+                "arrow",
+                "link small mt20",
+              )}
             </div>`,
         );
       } else {
@@ -539,7 +636,10 @@ document.addEventListener("submit", async (event) => {
       break;
     }
     case "review-form":
-      appState.reviews.push({ rating: appState.rating, text: String(f.get("text") || "") });
+      appState.reviews.push({
+        rating: appState.rating,
+        text: String(f.get("text") || ""),
+      });
       saveLocalState();
       navigateTo("host/marko");
       showToast("Your review has been published.");
@@ -547,10 +647,6 @@ document.addEventListener("submit", async (event) => {
     case "listing-form": {
       captureListingDraft();
       const n = appState.listingStep;
-      if (n === 1 && !appState.uploads["listing-0"]) {
-        showToast("Add at least one photo.");
-        break;
-      }
       if (n === 2 && appState.listing.to < appState.listing.from) {
         showToast("The availability end date must be after the start date.");
         break;
@@ -564,26 +660,37 @@ document.addEventListener("submit", async (event) => {
           showToast("Confirm that the listing details are accurate.");
           break;
         }
-        const p = { ...appState.listing, name: appState.listing.title, img: "camera.jpg" };
-        if (currentRoute === "edit-listing" && appState.editId?.startsWith("own-"))
-          appState.ownListings[Number(appState.editId.slice(4))] = p;
-        else if (currentRoute === "edit-listing" && appState.editId) {
-          const original = findListing(appState.editId);
-          Object.assign(original, {
-            name: p.name,
-            desc: p.description,
-            category: p.category,
-            price: p.price,
-            deposit: p.deposit,
-            location: p.location,
-          });
-        } else appState.ownListings.push(p);
-        saveLocalState();
-        appState.listingStep = 0;
-        navigateTo("listings");
-        showToast(
-          currentRoute === "edit-listing" ? "Listing changes saved." : "Listing saved.",
-        );
+        if (currentRoute === "edit-listing") {
+          showToast("Editing published listings is not supported by the API yet.");
+          break;
+        }
+        if (!isSignedIn()) {
+          showToast("Sign in to publish a listing.");
+          break;
+        }
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (submitButton?.disabled) break;
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.textContent = "Publishing...";
+        }
+        try {
+          const created = await listingService.createListing(appState.listing);
+          // Refresh the server-backed list after a successful creation.
+          appState.ownListings = [];
+          appState.ownListingsStatus = "idle";
+          appState.ownListingsError = "";
+          appState.listingStep = 0;
+          navigateTo("listings");
+          showToast("Listing published successfully.");
+        } catch (error) {
+          showToast(error.message || "Could not publish listing. Please try again.");
+        } finally {
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = "List an item";
+          }
+        }
       }
       break;
     }
@@ -593,13 +700,18 @@ document.addEventListener("submit", async (event) => {
       appState.messages.push({
         chat: appState.chat,
         text: msg,
-        time: new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }),
+        time: new Date().toLocaleTimeString("en-GB", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
       });
       saveLocalState();
       const body = selectElement("#chat-body");
       body.insertAdjacentHTML(
         "beforeend",
-        /* HTML */ `<div class="bubble me">${escapeHtml(msg)}<small>Just now · ✓</small></div>`,
+        /* HTML */ `<div class="bubble me">
+          ${escapeHtml(msg)}<small>Just now · ✓</small>
+        </div>`,
       );
       form.reset();
       body.scrollTop = body.scrollHeight;
@@ -634,7 +746,7 @@ document.addEventListener("submit", async (event) => {
           <div class="host-mini">
             ${renderAvatar("me")}
             <div>
-              <h4>${escapeHtml(appState.profile.first)}</h4>
+              <h4>${escapeHtml(getFirstName() || "You")}</h4>
               <p>Just now</p>
             </div>
           </div>
@@ -679,7 +791,9 @@ document.addEventListener("submit", async (event) => {
                 : 0;
       selectElement("#assistant-conversation").insertAdjacentHTML(
         "beforeend",
-        /* HTML */ `<div class="bubble me">${escapeHtml(f.get("question"))}</div>
+        /* HTML */ `<div class="bubble me">
+            ${escapeHtml(f.get("question"))}
+          </div>
           <div class="notice">${faqs[index][1]}</div>`,
       );
       form.reset();
@@ -712,13 +826,21 @@ document.addEventListener("submit", async (event) => {
             ${renderIcon("file")}
             <p>${escapeHtml(f.get("reason"))}</p>
           </div>
-          ${renderLink("admin/tickets", "Back to requests", "arrow", "btn wide mt20")}`,
+          ${renderLink(
+            "admin/tickets",
+            "Back to requests",
+            "arrow",
+            "btn wide mt20",
+          )}`,
       );
       break;
     case "moderation-form": {
       const row = selectElement("#moderation-" + form.dataset.id);
       if (row) {
-        row.querySelector(".badge").outerHTML = renderBadge("Changes requested", "amber");
+        row.querySelector(".badge").outerHTML = renderBadge(
+          "Changes requested",
+          "amber",
+        );
         row.querySelectorAll("button").forEach((b) => (b.disabled = true));
       }
       closeModal();
@@ -806,7 +928,9 @@ document.addEventListener("input", (event) => {
   if (el.id === "admin-ticket-search") filterAdminRequests();
   if (el.id === "faq-search") {
     const list = faqs.filter(([q, a]) =>
-      (q + " " + a).toLocaleLowerCase("en").includes(el.value.toLocaleLowerCase("en")),
+      (q + " " + a)
+        .toLocaleLowerCase("en")
+        .includes(el.value.toLocaleLowerCase("en")),
     );
     selectElement("#faq-results").innerHTML = list.length
       ? list

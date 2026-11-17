@@ -6,7 +6,8 @@ const path = require("node:path");
 const vm = require("node:vm");
 const { JSDOM, VirtualConsole } = require("jsdom");
 const root = path.resolve(__dirname, "..");
-function createApp(saved) {
+// `fetchImpl` stands in for the backend; by default the session check never answers.
+function createApp(saved, fetchImpl) {
   const errors = [];
   const consoleBridge = new VirtualConsole();
   consoleBridge.on("jsdomError", (e) => errors.push(e.message));
@@ -18,6 +19,7 @@ function createApp(saved) {
   });
   const w = dom.window;
   w.scrollTo = () => {};
+  w.fetch = fetchImpl || (() => new Promise(() => {}));
   w.HTMLElement.prototype.scrollIntoView = () => {};
   w.URL.createObjectURL = () => "blob:sample-image";
   if (saved) w.localStorage.setItem("rentit.frontend.v1", saved);
@@ -165,32 +167,47 @@ test("booking rejects reversed dates and calculates the configured platform fee"
   }
 });
 
-test("listing wizard validates photos, creates and edits a local listing", () => {
+test("listing wizard requires authentication to publish", () => {
   const a = createApp();
   try {
     a.route("new-listing");
     a.field("#listing-title", "Weekend camera kit");
-    a.field(
-      "#listing-description",
-      "A clean camera kit with two lenses and a protective carrying case.",
-    );
+    a.field("#listing-description", "A clean camera kit with two lenses and a protective carrying case.");
     a.submit("#listing-form");
     assert.equal(a.evaluate("appState.listingStep"), 1);
     a.submit("#listing-form");
-    assert.equal(a.evaluate("appState.listingStep"), 1);
-    a.click('[data-action="sample-photos"]');
-    a.submit("#listing-form");
+    assert.equal(a.evaluate("appState.listingStep"), 2);
     a.field("#listing-price", "20");
-    a.field("#listing-from", "2026-11-01");
-    a.field("#listing-to", "2026-12-31");
     a.submit("#listing-form");
+    assert.equal(a.evaluate("appState.listingStep"), 3);
     a.field('[name="listing-terms"]', true);
     a.submit("#listing-form");
-    assert.equal(a.evaluate("appState.ownListings[0].title"), "Weekend camera kit");
+    assert.equal(a.evaluate("appState.ownListings.length"), 0);
+  } finally {
+    a.close();
+  }
+});
+
+test("My listings loads paginated backend results and filters by owner", async () => {
+  const mine = {id: 1, title: "Calculator", price_per_day: 500, category: "Learning", is_available: true, owner: {id: "user-a"}};
+  const other = {id: 2, title: "Not mine", price_per_day: 300, category: "Tools", is_available: true, owner: {id: "user-b"}};
+  const urls = [];
+  const a = createApp(null, async (url) => {
+    urls.push(String(url));
+    if (String(url).includes("/api/v2/listings?")) return {ok: true, json: async () => [mine, other]};
+    return new Promise(() => {});
+  });
+  try {
+    a.evaluate('setSignedInUser({id:"user-a",name:"Test User",email:"test@example.com"})');
     a.route("listings");
-    a.click('[data-action="edit-listing"][data-id="own-0"]');
-    a.route("edit-listing");
-    assert.equal(a.d.querySelector("#listing-title").value, "Weekend camera kit");
+    for (let i = 0; i < 10 && a.evaluate('appState.ownListingsStatus') !== 'loaded'; i++) {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    }
+    assert.equal(a.evaluate('appState.ownListingsStatus'), 'loaded');
+    assert.equal(a.evaluate('appState.ownListings.length'), 1);
+    assert.match(a.d.querySelector('#app').textContent, /Calculator/);
+    assert.doesNotMatch(a.d.querySelector('#app').textContent, /Not mine/);
+    assert.ok(urls.some((url) => url.includes('page=1&limit=100')));
   } finally {
     a.close();
   }
@@ -269,4 +286,182 @@ test("screen directory, dialog Escape and skip link work without losing the rout
   } finally {
     a.close();
   }
+});
+
+// ---- Signed-in member from GET /api/v1/auth/me -------------------------------------------------
+// The app starts an auth check on load that fails in jsdom (no fetch); wait for it to settle first.
+const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
+async function createAppAs(user) {
+  const a = createApp();
+  await settle();
+  a.evaluate(user ? `setSignedInUser(${JSON.stringify(user)})` : "setSignedOut()");
+  return a;
+}
+const ana = { id: "u1", name: "Ana Horvat", email: "ana@example.com", role: "user" };
+
+test("signed-in member sees their own name, initials and email instead of sample data", async () => {
+  const a = await createAppAs(ana);
+  try {
+    a.route("dashboard");
+    assert.equal(a.d.querySelector(".header .nav-right .avatar").textContent.trim(), "AH");
+    assert.equal(a.d.querySelector(".user-meta .avatar").textContent.trim(), "AH");
+    assert.equal(a.d.querySelector(".user-meta h4").textContent.trim(), "Ana Horvat");
+    assert.equal(a.d.querySelector(".user-meta p").textContent.trim(), "Personal account");
+    assert.match(a.d.querySelector("h1").textContent, /Hi, Ana\./);
+    a.route("profile");
+    assert.equal(a.d.querySelector(".profile-header h1").textContent.trim(), "Ana Horvat");
+    a.route("verification");
+    assert.match(a.d.body.textContent, /ana@example\.com/);
+    for (const route of ["dashboard", "profile", "settings", "payments", "messages", "tickets/current"]) {
+      a.route(route);
+      const text = a.d.body.textContent;
+      assert.ok(!/Ivan|ivan\.petrovic/.test(text), route + ": sample member still visible");
+      assert.ok(!/\bIP\b/.test([...a.d.querySelectorAll(".avatar")].map((e) => e.textContent.trim()).join(" ")), route + ": IP avatar");
+    }
+    assert.deepEqual(a.errors, []);
+  } finally {
+    a.close();
+  }
+});
+
+test("nobody signed in shows a Sign in button and no member name", async () => {
+  const a = await createAppAs(null);
+  try {
+    a.route("explore");
+    const link = a.d.querySelector('.header .nav-right a[href="#/login"]');
+    assert.ok(link, "Sign in link in header");
+    assert.equal(link.textContent.trim(), "Sign in");
+    assert.equal(a.d.querySelector(".header .nav-right .avatar"), null);
+    a.route("dashboard");
+    assert.equal(a.d.querySelector(".user-meta h4").textContent.trim(), "Not signed in");
+    assert.equal(a.d.querySelector('[data-action="logout"]'), null);
+    assert.ok(a.d.querySelector('.sidebar a[href="#/login"]'), "Sign in link in sidebar");
+    assert.ok(!/Ivan/.test(a.d.body.textContent));
+  } finally {
+    a.close();
+  }
+});
+
+test("while the session is being checked the header shows neutral placeholders", async () => {
+  const a = createApp();
+  await settle();
+  try {
+    a.evaluate('appState.auth = { status: "loading", user: null }; renderCurrentRoute()');
+    assert.equal(a.d.querySelector('.header .nav-right a[href="#/login"]'), null);
+    assert.equal(a.d.querySelector(".header .nav-right .avatar").textContent.trim(), "");
+    a.route("dashboard");
+    assert.equal(a.d.querySelector(".user-meta h4").textContent.trim(), "");
+    assert.ok(!/Not signed in/.test(a.d.body.textContent));
+  } finally {
+    a.close();
+  }
+});
+
+test("administration is offered only to members with the admin role", async () => {
+  const user = await createAppAs(ana);
+  try {
+    user.route("dashboard");
+    assert.equal(user.d.querySelector('.sidebar a[href="#/admin"]'), null);
+  } finally {
+    user.close();
+  }
+  const admin = await createAppAs({ ...ana, name: "Pavao Admin", role: "admin" });
+  try {
+    admin.route("dashboard");
+    assert.ok(admin.d.querySelector('.sidebar a[href="#/admin"]'));
+    admin.route("admin");
+    assert.equal(admin.d.querySelector(".user-meta h4").textContent.trim(), "Pavao Admin");
+    assert.equal(admin.d.querySelector(".user-meta p").textContent.trim(), "Administrator");
+  } finally {
+    admin.close();
+  }
+});
+
+test("logout clears the signed-in member and returns to sign in", async () => {
+  const a = await createAppAs(ana);
+  try {
+    a.evaluate("authService.logout = async () => {}");
+    a.route("dashboard");
+    a.click('[data-action="logout"]');
+    await settle();
+    assert.equal(a.evaluate("appState.auth.status"), "anonymous");
+    assert.equal(a.evaluate("appState.profile.first"), "");
+    assert.equal(a.w.location.hash, "#/login");
+  } finally {
+    a.close();
+  }
+});
+
+test("initials and unusual names are handled safely", async () => {
+  const a = await createAppAs(null);
+  try {
+    const initials = (n) => a.evaluate(`getInitials(${JSON.stringify(n)})`);
+    assert.equal(initials("Ana Horvat"), "AH");
+    assert.equal(initials("Madonna"), "MA");
+    assert.equal(initials("  šime   Đurić  "), "ŠĐ");
+    assert.equal(initials("Ana Maria Horvat"), "AH");
+    assert.equal(initials(""), "");
+    a.evaluate('setSignedInUser({ id: "x", name: "", email: "no.name@example.com", role: "user" })');
+    assert.equal(a.evaluate("appState.profile.first"), "no.name");
+    a.evaluate('setSignedInUser({ id: "x", name: "<img src=x onerror=1> Horvat", email: "e@example.com", role: "user" })');
+    a.route("dashboard");
+    assert.equal(a.d.querySelector(".user-meta img"), null);
+    assert.equal(a.d.querySelector(".header img.avatar"), null);
+    assert.ok(a.d.querySelector(".user-meta h4").textContent.includes("<img"));
+  } finally {
+    a.close();
+  }
+});
+
+test("the session check on load fills in the member, or shows Sign in", async () => {
+  const wait = () => new Promise((resolve) => setTimeout(resolve, 20));
+  const reply = (status, body) => async () => ({ ok: status < 400, status, json: async () => body });
+  const requests = [];
+  const ok = createApp(undefined, async (url, options) => {
+    requests.push([url, options]);
+    return reply(200, ana)();
+  });
+  try {
+    await wait();
+    assert.equal(ok.d.querySelector(".header .nav-right .avatar").textContent.trim(), "AH");
+    assert.match(requests[0][0], /\/api\/v2\/me$/);
+    assert.equal(requests[0][1].credentials, "include");
+  } finally {
+    ok.close();
+  }
+  for (const impl of [
+    reply(401, { detail: "Not authenticated" }),
+    async () => {
+      throw new Error("network down");
+    },
+  ]) {
+    const a = createApp(undefined, impl);
+    try {
+      await wait();
+      assert.equal(a.d.querySelector('.header .nav-right a[href="#/login"]').textContent.trim(), "Sign in");
+      assert.equal(a.evaluate("appState.auth.status"), "anonymous");
+    } finally {
+      a.close();
+    }
+  }
+});
+
+
+test("v2 profile data fills optional fields and does not show fake verification or profile statistics", async () => {
+  const a = await createAppAs({
+    id: "u2", name: "Mia Novak", email: "mia@example.com", role: "user",
+    display_name: "Mia N", phone: "+385123456", city: "Split", bio: "Hello from Split",
+  });
+  try {
+    a.route("profile");
+    const text = a.d.querySelector("main").textContent;
+    assert.match(text, /Mia Novak/);
+    assert.match(text, /Split/);
+    assert.match(text, /Hello from Split/);
+    assert.match(text, /\+385123456/);
+    assert.doesNotMatch(text, /Identity verified|Phone number verified|Member since 2025|Average rating/);
+    a.route("settings");
+    assert.match(a.d.querySelector("main").textContent, /Mia N/);
+    assert.equal(a.d.querySelector("#settings-form"), null);
+  } finally { a.close(); }
 });

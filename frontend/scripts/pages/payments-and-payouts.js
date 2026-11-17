@@ -32,7 +32,7 @@ function renderPaymentsPage() {
             ${renderIcon("building")}
           </div>
           <p class="small mt20">
-            Personal account · ${escapeHtml(appState.profile.first + " " + appState.profile.last)}
+            Personal account${isSignedIn() ? " · " + escapeHtml(getFullName()) : ""}
           </p>
           <h3 class="mt12" style="letter-spacing:.04em">HR •••• •••• •••• 1234</h3>
           ${renderButton("payout-account", "View payout settings", "edit", "link small mt20")}

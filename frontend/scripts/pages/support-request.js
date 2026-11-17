@@ -25,7 +25,7 @@ function renderSupportRequestPage() {
               <div class="host-mini">
                 ${renderAvatar("me")}
                 <div>
-                  <h4>${escapeHtml(appState.profile.first)} · your request</h4>
+                  <h4>${escapeHtml(getFirstName() || "You")} · your request</h4>
                   <p>${t ? "Just now" : "10 October · 12:42"}</p>
                 </div>
               </div>

@@ -29,9 +29,21 @@ const renderImage = (name, alt, cls = "", extra = "") =>
     loading="lazy"
   />`;
 
+/**
+ * Avatar of the signed-in member: initials, or an empty circle while loading / signed out.
+ * @param {string} size Optional CSS size class.
+ * @param {string} style Optional inline style.
+ */
+const renderOwnAvatar = (size = "", style = "") => {
+  const initials = isSignedIn() ? getInitials(appState.auth.user.name) : "";
+  return /* HTML */ `<span class="avatar ${size}" ${style ? `style="${style}"` : ""} ${initials ? "" : 'aria-hidden="true"'}
+    >${escapeHtml(initials)}</span
+  >`;
+};
+
 const renderAvatar = (who = "marko", size = "") =>
   who === "me"
-    ? /* HTML */ `<span class="avatar ${size}">IP</span>`
+    ? renderOwnAvatar(size)
     : renderImage(
         who === "ana" ? "avatar-ana.jpg" : "avatar.jpg",
         who === "ana" ? "Ana Horvat" : "Marko Kovač",

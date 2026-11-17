@@ -20,14 +20,12 @@ const storedState = loadLocalState();
 const appState = {
   saved: storedState.saved || ["camera", "tent"],
   messages: storedState.messages || [],
-  ownListings: storedState.ownListings || [],
-  profile: storedState.profile || {
-    first: "Ivan",
-    last: "Petrović",
-    email: "ivan.petrovic@example.com",
-    phone: "+385 91 234 5678",
-    city: "Zagreb",
-  },
+  ownListings: [], // Loaded from the API, never from browser storage.
+  ownListingsStatus: "idle",
+  ownListingsError: "",
+  // Identity comes from the signed-in account (GET /api/v2/me), never from local storage.
+  profile: { first: "", last: "", email: "", phone: "", city: "", bio: "", display_name: "", avatar_key: "" },
+  auth: { status: "loading", user: null },
   booking: storedState.booking || null,
   tickets: storedState.tickets || [],
   reviews: storedState.reviews || [],
@@ -76,14 +74,70 @@ function saveLocalState() {
       JSON.stringify({
         saved: appState.saved,
         messages: appState.messages,
-        ownListings: appState.ownListings,
-        profile: appState.profile,
         booking: appState.booking,
         tickets: appState.tickets,
         reviews: appState.reviews,
       }),
     );
   } catch {}
+}
+
+/**
+ * Initials for the avatar, e.g. "Ana Horvat" -> "AH", "Madonna" -> "MA".
+ * @param {string} name Display name of the member.
+ * @returns {string} Up to two upper-case letters, or an empty string.
+ */
+function getInitials(name) {
+  const words = String(name || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((word) => Array.from(word));
+  if (!words.length) return "";
+  const second = words.length > 1 ? words.at(-1)[0] : words[0][1] || "";
+  return (words[0][0] + second).toLocaleUpperCase("en");
+}
+
+const isSignedIn = () => appState.auth.status === "authenticated";
+const isAdmin = () => isSignedIn() && appState.auth.user.role === "admin";
+const getFirstName = () => appState.profile.first;
+const getFullName = () =>
+  [appState.profile.first, appState.profile.last].filter(Boolean).join(" ") || "Guest";
+
+/**
+ * Store the signed-in member and optional profile fields returned by GET /api/v2/me.
+ * Optional fields may be absent because the backend excludes null values.
+ */
+function setSignedInUser(user) {
+  appState.ownListings = [];
+  appState.ownListingsStatus = "idle";
+  appState.ownListingsError = "";
+  const email = String(user?.email || "");
+  const name = String(user?.name || "").trim() || email.split("@")[0];
+  const [first = "", ...rest] = name.split(/\s+/);
+  appState.auth = {
+    status: "authenticated",
+    user: { ...user, id: user?.id, name, email, role: String(user?.role || "user") },
+  };
+  appState.profile = {
+    first,
+    last: rest.join(" "),
+    email,
+    phone: String(user?.phone || ""),
+    city: String(user?.city || ""),
+    bio: String(user?.bio || ""),
+    display_name: String(user?.display_name || ""),
+    avatar_key: String(user?.avatar_key || ""),
+  };
+}
+
+/** Forget the signed-in member (no session, or after logout). */
+function setSignedOut() {
+  appState.ownListings = [];
+  appState.ownListingsStatus = "idle";
+  appState.ownListingsError = "";
+  appState.auth = { status: "anonymous", user: null };
+  appState.profile = { first: "", last: "", email: "", phone: "", city: "", bio: "", display_name: "", avatar_key: "" };
 }
 
 const findListing = (id) => sampleListings.find((p) => p.id === id) || sampleListings[0];

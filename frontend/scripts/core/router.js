@@ -154,4 +154,27 @@ function renderCurrentRoute() {
         }[base] || "Your next great plan") + " · "
       : "") + "RentIt";
   if (base === "product" || base === "booking") updateBookingPrice();
+  if (base === "listings" && isSignedIn() && appState.ownListingsStatus === "idle") {
+    loadMyListings();
+  }
+}
+
+/** Fetch real listings once per visit/session; re-render only while on this route. */
+async function loadMyListings() {
+  const ownerId = appState.auth.user?.id;
+  if (!ownerId || appState.ownListingsStatus !== "idle") return;
+  appState.ownListingsStatus = "loading";
+  if (currentRoute === "listings") renderCurrentRoute();
+  try {
+    const listings = await listingService.getMyListings(ownerId);
+    // A logout or account change while fetching must not expose old listings.
+    if (!isSignedIn() || String(appState.auth.user?.id) !== String(ownerId)) return;
+    appState.ownListings = listings;
+    appState.ownListingsStatus = "loaded";
+  } catch (error) {
+    if (!isSignedIn() || String(appState.auth.user?.id) !== String(ownerId)) return;
+    appState.ownListingsError = error.message || "Could not load listings.";
+    appState.ownListingsStatus = "error";
+  }
+  if (currentRoute === "listings") renderCurrentRoute();
 }

@@ -12,17 +12,16 @@ window.addEventListener("hashchange", () => {
 renderCurrentRoute();
 
 async function initializeAuthentication() {
-    try {
-        const user = await authService.getCurrentUser();
-
-        if (user) {
-            console.log("Logged in:", user.name, user.role);
-        } else {
-            console.log("Not logged in");
-        }
-    } catch (error) {
-        console.error("Authentication check failed:", error);
-    }
+  try {
+    const user = await authService.getCurrentUser();
+    if (user) setSignedInUser(user);
+    else setSignedOut();
+  } catch (error) {
+    console.error("Authentication check failed:", error);
+    setSignedOut();
+  }
+  // Redraw so the header, sidebar and screens show the member who is signed in.
+  renderCurrentRoute();
 }
 
 initializeAuthentication();
