@@ -12,24 +12,23 @@ function renderSettingsPage() {
   const tab = appState.settingsTab;
   let form =
     tab === "profile"
-      ? /* HTML */ `<form id="settings-form">
+      ? /* HTML */ `<div id="settings-profile-details">
           <div class="host-mini mb20">
             ${renderAvatar("me", "large")}
             <div>
               <h3>Personal details</h3>
-              <p class="small mt12">Update your profile information.</p>
+              <p class="small mt12">Your profile information from your account. Editing is not available yet.</p>
             </div>
           </div>
           <div class="form-grid">
-            ${renderInputField("First name", "first", appState.profile.first, "text", "required")}${renderInputField("Last name", "last", appState.profile.last, "text", "required")}${renderInputField("Email", "email", appState.profile.email, "email", "required")}${renderInputField("Phone number", "phone", appState.profile.phone, "tel")}${renderInputField("City", "city", appState.profile.city, "text", "required")}
+            ${[["First name", appState.profile.first], ["Last name", appState.profile.last], ["Email", appState.profile.email], ["Phone number", appState.profile.phone], ["City", appState.profile.city], ["Display name", appState.profile.display_name]].map(([label, value]) => `<div class="field"><label>${label}</label><p>${escapeHtml(value || "Not provided")}</p></div>`).join("")}
           </div>
           <div class="field">
             <label for="bio">About me</label>
-            <textarea id="bio" name="bio">
-${escapeHtml(appState.profile.bio || "I enjoy trying new things and sharing equipment I do not use every day.")}</textarea>
+            <p class="small">${escapeHtml(appState.profile.bio || "Not provided")}</p>
           </div>
-          <button type="submit" class="btn">Save changes ${renderIcon("check")}</button>
-        </form>`
+          <p class="small mt12">Profile changes cannot be saved until a backend update endpoint is available.</p>
+        </div>`
       : tab === "security"
         ? /* HTML */ `<h3>Account security</h3>
             <div class="setting-row">

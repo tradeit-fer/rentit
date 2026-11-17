@@ -16,6 +16,16 @@ function renderBrandLogo() {
 }
 
 /**
+ * Account entry in the header: avatar when signed in, "Sign in" when nobody is.
+ * @returns {string} HTML for this view.
+ */
+function renderHeaderAccount() {
+  if (appState.auth.status === "anonymous")
+    return renderLink("login", "Sign in", "user", "btn light small");
+  return /* HTML */ `<a href="#/dashboard" aria-label="My account">${renderAvatar("me")}</a>`;
+}
+
+/**
  * render site header
  * @returns {string} HTML for this view.
  */
@@ -40,11 +50,7 @@ function renderSiteHeader() {
           >${renderIcon("bell")}</a
         >
         <span class="divider"> </span
-        >${renderLink("new-listing", "List an item", "plus", "btn small")}<a
-          href="#/dashboard"
-          aria-label="My account"
-          >${renderAvatar("me")}</a
-        >
+        >${renderLink("new-listing", "List an item", "plus", "btn small")}${renderHeaderAccount()}
       </div>
     </div>
   </header>`;
@@ -94,33 +100,46 @@ function renderAccountSidebar(admin = false) {
   const nav = admin ? adminNavigation : memberNavigation;
   return /* HTML */ `<aside class="sidebar">
     <div class="user-meta flex">
-      ${admin ? /* HTML */ `<span class="avatar" style="background:#dfe7ce;color:#4e6b3d">AK</span>` : renderAvatar("me")}
+      ${admin ? renderOwnAvatar("", "background:#dfe7ce;color:#4e6b3d") : renderAvatar("me")}
       <div>
         <h4>
-          ${admin ? "Ana Kovač" : escapeHtml(appState.profile.first + " " + appState.profile.last)}
+          ${escapeHtml(isSignedIn() ? getFullName() : appState.auth.status === "anonymous" ? "Not signed in" : "")}
         </h4>
-        <p>${admin ? "Administrator" : "Personal account"}</p>
+        <p>
+          ${
+            isSignedIn()
+              ? isAdmin()
+                ? "Administrator"
+                : "Personal account"
+              : appState.auth.status === "anonymous"
+                ? '<a href="#/login">Sign in</a>'
+                : "&nbsp;"
+          }
+        </p>
       </div>
     </div>
     <div class="nav-section-label">${admin ? "WORKSPACE" : "MY RENTIT"}</div>
     ${nav.map(([r, l, i]) => /* HTML */ `<a href="#/${r}" class="side-link ${isNavigationActive(r) ? "active" : ""}">${renderIcon(i)}${l}${r === "messages" ? "<b>2</b>" : r === "admin/tickets" ? "<b>12</b>" : ""}</a>`).join("")}
     <div class="nav-section-label">${admin ? "MEMBER AREA" : "EXPLORE"}</div>
     <a class="side-link" href="#/">${renderIcon("search")}Back to exploring</a>
-    <a class="side-link" href="#/${admin ? "dashboard" : "admin"}"
-      >${renderIcon(admin ? "user" : "shield")}${admin ? "Account overview" : "Administration"}</a
-    >
+    ${
+      admin || isAdmin()
+        ? /* HTML */ `<a class="side-link" href="#/${admin ? "dashboard" : "admin"}"
+            >${renderIcon(admin ? "user" : "shield")}${admin ? "Account overview" : "Administration"}</a
+          >`
+        : ""
+    }
     <div class="sidebar-tip">
       <span class="green">${renderIcon("leaf")}</span>
       <h4>More use. Less stuff.</h4>
       <p>Every rental gives things another chance.</p>
       ${renderLink("new-listing", "Create your first listing", "arrow", "link mt12")}
     </div>
-    <button
-    type="button"
-    class="side-link"
-    data-action="logout">
-    Logout
-  </button>
+    ${
+      isSignedIn()
+        ? /* HTML */ `<button type="button" class="side-link" data-action="logout">Logout</button>`
+        : /* HTML */ `<a class="side-link" href="#/login">${renderIcon("user")}Sign in</a>`
+    }
   </aside>`;
 }
 

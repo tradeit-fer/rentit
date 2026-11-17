@@ -83,7 +83,7 @@ function renderMessagesPage() {
                       return?<small>10:12 · ✓✓</small>
                     </div>
                     <div class="bubble">
-                      Hi Ivan, of course! Same place as pickup. Hope your photos turned out
+                      Hi ${escapeHtml(getFirstName() || "there")}, of course! Same place as pickup. Hope your photos turned out
                       great!<small>10:19</small>
                     </div>
                     <div class="bubble me">
@@ -93,7 +93,7 @@ function renderMessagesPage() {
                     <div class="bubble">Great, see you tomorrow at 10!<small>10:24</small></div>`
                 : appState.chat === "ana"
                   ? /* HTML */ `<div class="bubble">
-                        Hi Ivan, thanks for making everything so easy. The speaker was great!<small
+                        Hi ${escapeHtml(getFirstName() || "there")}, thanks for making everything so easy. The speaker was great!<small
                           >Yesterday · 17:30</small
                         >
                       </div>

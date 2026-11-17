@@ -12,22 +12,22 @@
 function renderProfilePage(publicView = false) {
   const name = publicView
     ? "Marko Kovač"
-    : escapeHtml(appState.profile.first + " " + appState.profile.last);
+    : escapeHtml(getFullName());
   const content = /* HTML */ `<div class="profile-banner"></div>
     <div class="profile-header">
       ${renderAvatar(publicView ? "marko" : "me", "large")}
       <div>
         <h1>${name}</h1>
-        <p>${renderIcon("pin")} Zagreb · Member since ${publicView ? "2024." : "2025."}</p>
+        <p>${renderIcon("pin")} ${publicView ? "Zagreb · Member since 2024." : escapeHtml(appState.profile.city || "City not provided")}</p>
       </div>
-      ${publicView ? renderLink("messages", "Send message", "chat", "btn light small") : renderLink("settings", "Edit profile", "edit", "btn light small")}
+      ${publicView ? renderLink("messages", "Send message", "chat", "btn light small") : renderLink("settings", "View details", "edit", "btn light small")}
     </div>
     <div class="two-col mt28">
       <aside class="stack">
         <div class="card">
           <span class="eyebrow">${publicView ? "OWNER & RENTER" : "YOUR PROFILE"}</span>
-          <div class="profile-facts">
-            <div>
+          ${publicView ? `<div class="profile-facts">` : ""}
+            ${publicView ? `<div>
               <b>4.9</b>
               <span>Average rating</span>
             </div>
@@ -38,18 +38,18 @@ function renderProfilePage(publicView = false) {
             <div>
               <b>${publicView ? "48" : "18"}</b>
               <span>Rentals</span>
-            </div>
-          </div>
+            </div>` : ""}
+          ${publicView ? "</div>" : ""}
           <h4 class="mt20">A little about me</h4>
           <p class="small mt12">
-            ${publicView ? "Photography, outdoor trips and small home projects. I love things having more than one user. Get in touch if you have any questions about the equipment." : "I enjoy trying new things and sharing equipment I do not use every day. There is always time for a good agreement."}
+            ${publicView ? "Photography, outdoor trips and small home projects. I love things having more than one user. Get in touch if you have any questions about the equipment." : escapeHtml(appState.profile.bio || "No bio provided yet.")}
           </p>
-          <hr />
-          <div class="stack">
-            <div class="flex small green">${renderIcon("shield")}Identity verified</div>
-            <div class="flex small green">${renderIcon("mail")}Email verified</div>
-            <div class="flex small green">${renderIcon("check")}Phone number verified</div>
-          </div>
+          ${!publicView ? `<hr />
+          <div class="stack small">
+            <div>${renderIcon("mail")} ${escapeHtml(appState.profile.email || "Email not provided")}</div>
+            <div>${renderIcon("check")} ${escapeHtml(appState.profile.phone || "Phone not provided")}</div>
+            ${appState.profile.display_name ? `<div>Display name: ${escapeHtml(appState.profile.display_name)}</div>` : ""}
+          </div>` : ""}
           ${!publicView ? renderLink("verification", "Identity verification settings", "arrow", "link small mt20") : ""}
         </div>
       </aside>
@@ -57,28 +57,28 @@ function renderProfilePage(publicView = false) {
         <div class="card">
           <div class="between mb20">
             <h3>Community experiences</h3>
-            <span class="stars small">★★★★★</span>
+            ${publicView ? `<span class="stars small">★★★★★</span>` : ""}
           </div>
-          <div class="tabs">
+          ${publicView ? `<div class="tabs">
             <button class="tab active" data-action="host-reviews">As an owner</button>
             <button class="tab" data-action="renter-reviews">As a renter</button>
-          </div>
+          </div>` : ""}
           <div id="profile-reviews">
-            ${appState.reviews
+            ${(publicView ? appState.reviews : [])
               .map(
                 (r) =>
                   /* HTML */ `<div class="review-block">
                     <div class="host-mini">
                       ${renderAvatar("me")}
                       <div>
-                        <h4>${escapeHtml(appState.profile.first)} · camera rental</h4>
+                        <h4>${escapeHtml(getFirstName() || "You")} · camera rental</h4>
                         <p>${"★".repeat(r.rating)}</p>
                       </div>
                     </div>
                     <p>${escapeHtml(r.text)}</p>
                   </div>`,
               )
-              .join("")}${renderSampleReviews()}
+              .join("")}${publicView ? renderSampleReviews() : `<p class="small">Reviews are not available from the profile API yet.</p>`}
           </div>
         </div>
         <div>
@@ -87,7 +87,7 @@ function renderProfilePage(publicView = false) {
             ${renderLink(publicView ? "explore" : "listings", "All listings", "arrow", "link")}
           </div>
           <div class="product-grid" style="grid-template-columns:repeat(2,minmax(0,1fr))">
-            ${(publicView ? [sampleListings[0], sampleListings[2]] : [sampleListings[5], sampleListings[1]]).map(renderListingCard).join("")}
+            ${publicView ? [sampleListings[0], sampleListings[2]].map(renderListingCard).join("") : `<p class="small">Your listings are not available from the profile API yet.</p>`}
           </div>
         </div>
       </section>

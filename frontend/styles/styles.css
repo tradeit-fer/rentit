@@ -1272,7 +1272,8 @@ hr {
 }
 .sidebar {
   border-right: 1px solid var(--line);
-  padding: 30px 18px;
+  /* Extra bottom space keeps the last item (Logout) clear of the floating screen navigator. */
+  padding: 30px 18px 96px;
   background: #f7f9f3;
   display: flex;
   flex-direction: column;

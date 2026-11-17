@@ -16,16 +16,16 @@ function renderVerificationPage() {
           <div class="card">
             <div class="between">
               <h3>Email address</h3>
-              ${renderBadge("Confirmed", "", "check")}
+              ${appState.profile.email ? renderBadge("On file", "gray") : renderBadge("Not added", "gray")}
             </div>
-            <p class="small mt12">${escapeHtml(appState.profile.email)}</p>
+            <p class="small mt12">${escapeHtml(appState.profile.email) || "Not added yet"}</p>
           </div>
           <div class="card">
             <div class="between">
               <h3>Phone number</h3>
-              ${renderBadge("Confirmed", "", "check")}
+              ${appState.profile.phone ? renderBadge("On file", "gray") : renderBadge("Not added", "gray")}
             </div>
-            <p class="small mt12">${escapeHtml(appState.profile.phone)}</p>
+            <p class="small mt12">${escapeHtml(appState.profile.phone) || "Not added yet"}</p>
           </div>
           <div class="card">
             <div class="between">
