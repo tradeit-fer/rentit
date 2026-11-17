@@ -167,15 +167,12 @@ test("booking rejects reversed dates and calculates the configured platform fee"
   }
 });
 
-test("listing wizard validates photos, creates and edits a local listing", () => {
+test("listing wizard requires authentication to publish", () => {
   const a = createApp();
   try {
     a.route("new-listing");
     a.field("#listing-title", "Weekend camera kit");
-    a.field(
-      "#listing-description",
-      "A clean camera kit with two lenses and a protective carrying case.",
-    );
+    a.field("#listing-description", "A clean camera kit with two lenses and a protective carrying case.");
     a.submit("#listing-form");
     assert.equal(a.evaluate("appState.listingStep"), 1);
     a.submit("#listing-form");
@@ -183,16 +180,35 @@ test("listing wizard validates photos, creates and edits a local listing", () =>
     a.click('[data-action="sample-photos"]');
     a.submit("#listing-form");
     a.field("#listing-price", "20");
-    a.field("#listing-from", "2026-11-01");
-    a.field("#listing-to", "2026-12-31");
     a.submit("#listing-form");
     a.field('[name="listing-terms"]', true);
     a.submit("#listing-form");
-    assert.equal(a.evaluate("appState.ownListings[0].title"), "Weekend camera kit");
+    assert.equal(a.evaluate("appState.ownListings.length"), 0);
+  } finally {
+    a.close();
+  }
+});
+
+test("My listings loads paginated backend results and filters by owner", async () => {
+  const mine = {id: 1, title: "Calculator", price_per_day: 500, category: "Learning", is_available: true, owner: {id: "user-a"}};
+  const other = {id: 2, title: "Not mine", price_per_day: 300, category: "Tools", is_available: true, owner: {id: "user-b"}};
+  const urls = [];
+  const a = createApp(null, async (url) => {
+    urls.push(String(url));
+    if (String(url).includes("/api/v2/listings?")) return {ok: true, json: async () => [mine, other]};
+    return new Promise(() => {});
+  });
+  try {
+    a.evaluate('setSignedInUser({id:"user-a",name:"Test User",email:"test@example.com"})');
     a.route("listings");
-    a.click('[data-action="edit-listing"][data-id="own-0"]');
-    a.route("edit-listing");
-    assert.equal(a.d.querySelector("#listing-title").value, "Weekend camera kit");
+    for (let i = 0; i < 10 && a.evaluate('appState.ownListingsStatus') !== 'loaded'; i++) {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    }
+    assert.equal(a.evaluate('appState.ownListingsStatus'), 'loaded');
+    assert.equal(a.evaluate('appState.ownListings.length'), 1);
+    assert.match(a.d.querySelector('#app').textContent, /Calculator/);
+    assert.doesNotMatch(a.d.querySelector('#app').textContent, /Not mine/);
+    assert.ok(urls.some((url) => url.includes('page=1&limit=100')));
   } finally {
     a.close();
   }

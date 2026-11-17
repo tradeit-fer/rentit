@@ -61,6 +61,16 @@ document.addEventListener("click", async (event) => {
     case "screens":
       openScreenNavigator();
       break;
+    case "toggle-screen-navigator": {
+      screenNavigatorCollapsed = !screenNavigatorCollapsed;
+      const navigator = el.closest(".screen-navigator");
+      navigator?.classList.toggle("is-collapsed", screenNavigatorCollapsed);
+      el.setAttribute("aria-expanded", String(!screenNavigatorCollapsed));
+      el.setAttribute("aria-label", screenNavigatorCollapsed ? "Show All screens button" : "Hide All screens button");
+      const arrow = el.querySelector("span");
+      if (arrow) arrow.textContent = screenNavigatorCollapsed ? "›" : "‹";
+      break;
+    }
     case "close":
       closeModal();
       break;
@@ -637,10 +647,6 @@ document.addEventListener("submit", async (event) => {
     case "listing-form": {
       captureListingDraft();
       const n = appState.listingStep;
-      if (n === 1 && !appState.uploads["listing-0"]) {
-        showToast("Add at least one photo.");
-        break;
-      }
       if (n === 2 && appState.listing.to < appState.listing.from) {
         showToast("The availability end date must be after the start date.");
         break;
@@ -654,35 +660,37 @@ document.addEventListener("submit", async (event) => {
           showToast("Confirm that the listing details are accurate.");
           break;
         }
-        const p = {
-          ...appState.listing,
-          name: appState.listing.title,
-          img: "camera.jpg",
-        };
-        if (
-          currentRoute === "edit-listing" &&
-          appState.editId?.startsWith("own-")
-        )
-          appState.ownListings[Number(appState.editId.slice(4))] = p;
-        else if (currentRoute === "edit-listing" && appState.editId) {
-          const original = findListing(appState.editId);
-          Object.assign(original, {
-            name: p.name,
-            desc: p.description,
-            category: p.category,
-            price: p.price,
-            deposit: p.deposit,
-            location: p.location,
-          });
-        } else appState.ownListings.push(p);
-        saveLocalState();
-        appState.listingStep = 0;
-        navigateTo("listings");
-        showToast(
-          currentRoute === "edit-listing"
-            ? "Listing changes saved."
-            : "Listing saved.",
-        );
+        if (currentRoute === "edit-listing") {
+          showToast("Editing published listings is not supported by the API yet.");
+          break;
+        }
+        if (!isSignedIn()) {
+          showToast("Sign in to publish a listing.");
+          break;
+        }
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (submitButton?.disabled) break;
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.textContent = "Publishing...";
+        }
+        try {
+          const created = await listingService.createListing(appState.listing);
+          // Refresh the server-backed list after a successful creation.
+          appState.ownListings = [];
+          appState.ownListingsStatus = "idle";
+          appState.ownListingsError = "";
+          appState.listingStep = 0;
+          navigateTo("listings");
+          showToast("Listing published successfully.");
+        } catch (error) {
+          showToast(error.message || "Could not publish listing. Please try again.");
+        } finally {
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = "List an item";
+          }
+        }
       }
       break;
     }

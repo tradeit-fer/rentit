@@ -12,7 +12,7 @@ function renderDashboardPage() {
   return renderAccountLayout(
     /* HTML */ `${renderPageHeading(`Hi, ${escapeHtml(getFirstName() || "there")}. What is the plan?`, "Monday, 12 October · Your things and your plans, all in one place.", renderLink("explore", "Explore listings", "search", "btn light small"))}
       <div class="grid4">
-        ${renderStatisticCard("Active rentals", "2", "calendar", "Next return on 13 October")}${renderStatisticCard("My listings", String(3 + appState.ownListings.length), "box", "2 listings available to rent")}${renderStatisticCard("Earnings this month", "148 €", "wallet", "+ €24 compared with September")}${renderStatisticCard("My rating", "4.9", "star", "Based on 12 reviews")}
+        ${renderStatisticCard("Active rentals", "2", "calendar", "Next return on 13 October")}${renderStatisticCard("My listings", appState.ownListingsStatus === "loaded" ? String(appState.ownListings.length) : "—", "box", "See My listings for details")}${renderStatisticCard("Earnings this month", "148 €", "wallet", "+ €24 compared with September")}${renderStatisticCard("My rating", "4.9", "star", "Based on 12 reviews")}
       </div>
       <div class="notice mt28">
         ${renderIcon("camera")}

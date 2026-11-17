@@ -20,7 +20,9 @@ const storedState = loadLocalState();
 const appState = {
   saved: storedState.saved || ["camera", "tent"],
   messages: storedState.messages || [],
-  ownListings: storedState.ownListings || [],
+  ownListings: [], // Loaded from the API, never from browser storage.
+  ownListingsStatus: "idle",
+  ownListingsError: "",
   // Identity comes from the signed-in account (GET /api/v2/me), never from local storage.
   profile: { first: "", last: "", email: "", phone: "", city: "", bio: "", display_name: "", avatar_key: "" },
   auth: { status: "loading", user: null },
@@ -72,7 +74,6 @@ function saveLocalState() {
       JSON.stringify({
         saved: appState.saved,
         messages: appState.messages,
-        ownListings: appState.ownListings,
         booking: appState.booking,
         tickets: appState.tickets,
         reviews: appState.reviews,
@@ -108,6 +109,9 @@ const getFullName = () =>
  * Optional fields may be absent because the backend excludes null values.
  */
 function setSignedInUser(user) {
+  appState.ownListings = [];
+  appState.ownListingsStatus = "idle";
+  appState.ownListingsError = "";
   const email = String(user?.email || "");
   const name = String(user?.name || "").trim() || email.split("@")[0];
   const [first = "", ...rest] = name.split(/\s+/);
@@ -129,6 +133,9 @@ function setSignedInUser(user) {
 
 /** Forget the signed-in member (no session, or after logout). */
 function setSignedOut() {
+  appState.ownListings = [];
+  appState.ownListingsStatus = "idle";
+  appState.ownListingsError = "";
   appState.auth = { status: "anonymous", user: null };
   appState.profile = { first: "", last: "", email: "", phone: "", city: "", bio: "", display_name: "", avatar_key: "" };
 }

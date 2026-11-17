@@ -65,10 +65,8 @@ ${escapeHtml(d.description)}</textarea>
       </div>`;
   if (n === 1)
     content = /* HTML */ `<p class="small">
-        Add at least one clear photo. We recommend front and back views, details and accessories.
+        Photo uploads are not supported yet. You can publish your listing without photos.
       </p>
-      ${renderPhotoUploadSlots("listing")}${renderButton("sample-photos", "Use example photos", "image", "link small mt20", 'data-mode="listing" type="button"')}
-      <hr />
       <div class="notice">
         ${renderIcon("info")}
         <div>
@@ -78,25 +76,7 @@ ${escapeHtml(d.description)}</textarea>
           </p>
         </div>
       </div>
-      <div id="ai-result" class="mt20">
-        ${
-          d.aiChecked
-            ? /* HTML */ `<div class="panel">
-                <div class="flex green">
-                  ${renderIcon("check")}<b class="small">Review passed</b>
-                </div>
-                <div class="cost-row">
-                  <span>Suggested category</span>
-                  <strong>${escapeHtml(d.category)}</strong>
-                </div>
-                <p class="small">
-                  The photos are clear and the description matches the selected category.
-                </p>
-              </div>`
-            : ""
-        }
-      </div>
-      ${renderButton("ai-check", d.aiChecked ? "Run review again" : "Review photos", "image", "btn light mt20", 'type="button"')}`;
+      <p class="small mt20">Photo review will be available when uploads are supported.</p>`;
   if (n === 2)
     content = /* HTML */ `<div class="form-grid">
         ${renderInputField("Daily price (€)", "listing-price", d.price, "number", 'min="1" max="9999" step="0.5" required')}${renderInputField("Refundable deposit (€)", "listing-deposit", d.deposit, "number", 'min="0" max="99999" step="1" required')}
@@ -165,8 +145,7 @@ ${escapeHtml(d.description)}</textarea>
         <strong>${formatDate(d.from || "2026-10-16")} – ${formatDate(d.to || "2026-12-31")}</strong>
       </div>
       <div class="cost-row">
-        <span>Content review</span
-        >${renderBadge(d.aiChecked ? "Review complete" : "Awaiting review", d.aiChecked ? "" : "amber")}
+        <span>Photos</span>${renderBadge("Not uploaded", "gray")}
       </div>
       <hr />
       <div class="notice">

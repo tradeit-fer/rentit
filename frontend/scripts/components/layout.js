@@ -84,11 +84,20 @@ function renderSiteFooter() {
  * render screen navigator
  * @returns {string} HTML for this view.
  */
+let screenNavigatorCollapsed = false;
+
 function renderScreenNavigator() {
   if (!APP_CONFIG.showScreenNavigator) return "";
-  return /* HTML */ `<button class="screen-navigator-toggle" data-action="screens">
-    ${renderIcon("grid")}All screens <b>${screenCount}</b>
-  </button>`;
+  return /* HTML */ `<div class="screen-navigator ${screenNavigatorCollapsed ? "is-collapsed" : ""}">
+    <button type="button" class="screen-navigator-toggle" data-action="screens" aria-label="Open all screens">
+      ${renderIcon("grid")}<span>All screens</span><b>${screenCount}</b>
+    </button>
+    <button type="button" class="screen-navigator-handle" data-action="toggle-screen-navigator"
+      aria-label="${screenNavigatorCollapsed ? "Show All screens button" : "Hide All screens button"}"
+      aria-expanded="${!screenNavigatorCollapsed}">
+      <span aria-hidden="true">${screenNavigatorCollapsed ? "›" : "‹"}</span>
+    </button>
+  </div>`;
 }
 
 /**
@@ -129,12 +138,16 @@ function renderAccountSidebar(admin = false) {
           >`
         : ""
     }
-    <div class="sidebar-tip">
-      <span class="green">${renderIcon("leaf")}</span>
-      <h4>More use. Less stuff.</h4>
-      <p>Every rental gives things another chance.</p>
-      ${renderLink("new-listing", "Create your first listing", "arrow", "link mt12")}
-    </div>
+    ${
+      isSignedIn() && appState.ownListingsStatus === "loaded" && appState.ownListings.length === 0
+        ? /* HTML */ `<div class="sidebar-tip">
+            <span class="green">${renderIcon("leaf")}</span>
+            <h4>More use. Less stuff.</h4>
+            <p>Every rental gives things another chance.</p>
+            ${renderLink("new-listing", "Create your first listing", "arrow", "link mt12")}
+          </div>`
+        : ""
+    }
     ${
       isSignedIn()
         ? /* HTML */ `<button type="button" class="side-link" data-action="logout">Logout</button>`
