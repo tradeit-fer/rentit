@@ -1,0 +1,114 @@
+
+@startuml
+hide circle
+skinparam linetype ortho
+
+entity users {
+    * id : string <<PK>>
+    --
+    name : string
+    email : string
+    role : string
+    created_at : timestamp
+    is_active : bool
+}
+
+entity external_identities {
+    * id : string <<PK>>
+    --
+    user_id : string <<FK>>
+    provider : string
+    provider_subject : string
+    expires : timestamp
+}
+
+entity user_profiles {
+    * id : string <<PK>>
+    --
+    user_id : string <<FK>>
+    display_name : string
+    bio : string
+    avatar_key : string
+}
+
+entity categories {
+    * id : int <<PK>>
+    --
+    name : string
+    parent_id : int <<FK>>
+}
+
+entity listings {
+    * id : int <<PK>>
+    --
+    owner_id : string <<FK>>
+    category_id : int <<FK>>
+    title : string
+    description : string
+    price_cents : int
+    status : string
+    created_at : timestamp
+    updated_at : timestamp
+}
+
+entity listing_location {
+    * listing_id : int <<PK>>
+    --
+    latitude : numeric
+    longitude : numeric
+    public_location : string
+}
+
+entity rental_request {
+    * id : int <<PK>>
+    --
+    listing_id : int <<FK>>
+    renter_id : string <<FK>>
+    start_date : timestamp
+    end_date : timestamp
+    status : string
+}
+
+entity rentals {
+    * id : int <<PK>>
+    --
+    request_id : int <<FK>>
+    listing_id : int <<FK>>
+    renter_id : string <<FK>>
+    status : string
+}
+
+entity rental_terms {
+    * rental_id : int <<PK, FK>>
+    --
+    rental_amount_cents : int
+    platform_fee_cents : int
+    total_amount_cents : int
+}
+
+entity reviews {
+    * id : int <<PK>>
+    --
+    rental_id : int <<FK>>
+    author_id : string <<FK>>
+    subject_id : string <<FK>>
+    subject_role : string
+    rating : int
+    comment : string
+    created_at : timestamp
+}
+
+users ||--|{ external_identities : has
+users |o--|| user_profiles : has
+categories ||--o{ categories : is_parent
+listings }o--|| categories : belongs_to
+listings }o--|| listing_location : is_located
+listings }o--|| users : lists
+listings ||--o{ rental_request : is_requested
+rentals }o--|| rental_request : is_rented
+rental_terms ||--|| rentals : specifies
+users ||--o{ reviews : writes
+users ||--o{ reviews : receives
+rentals ||--o{ reviews : has
+
+@enduml
