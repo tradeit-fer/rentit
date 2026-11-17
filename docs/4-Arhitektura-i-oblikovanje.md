@@ -83,8 +83,8 @@ Započnite crtanjem granice oko predloženog sustava. Unutar nje prepoznajte dij
 
 **Cilj:** Prikazati važne pohranjene entitete, njihove identifikatore i veze te dovoljno atributa za razumijevanje podataka aplikacije. ER dijagram odvojen je od reprezentativnog UML dijagrama razreda u nastavku.
 
-**ER dijagram:** [Ugradite čitljiv dijagram projekta.]  
-**Izvor dijagrama:** [Poveznica na njegov izvor.]  
+**ER dijagram:** ![ER dijagram podataka sustava RentIt](./assets/diagrams/er-diagram.svg)
+**Izvor dijagrama:** [Izvor](./puml/er-diagram.puml)  
 **Implementacija:** [Navedite gdje je odgovarajući model podataka definiran u projektu.]
 
 <details>
