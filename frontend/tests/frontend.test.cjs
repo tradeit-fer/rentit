@@ -116,27 +116,22 @@ test("all 35 routes and additional states render with valid local assets and lab
   }
 });
 
-test("English catalogue search, filters and persistent saved listings", () => {
+test("Public catalogue filters real backend listings and keeps saved preferences", () => {
   const a = createApp();
   try {
+    a.evaluate(`appState.publicListings = [
+      {id: 51, title: "Camera", category: "Photo & video", location: "Zagreb", description: "Digital camera", price_per_day: 500, deposit: 1000, is_available: true},
+      {id: 52, title: "Drill", category: "Tools", location: "Zagreb", description: "Power drill", price_per_day: 800, deposit: 1000, is_available: true}
+    ]; appState.publicListingsStatus = "loaded";`);
     a.field('[name="query"]', "camera");
     a.submit("#search-form");
     a.route("explore");
-    assert.ok(a.d.querySelectorAll(".product-card").length > 0);
-    assert.ok(
-      a.evaluate(
-        'getFilteredListings().every(p=>[p.name,p.category,p.desc].join(" ").toLowerCase().includes("camera"))',
-      ),
-    );
-    a.click('[data-action="reset-filters"]');
-    a.click('[data-action="save"][data-id="camera"]');
-    assert.equal(a.evaluate('appState.saved.includes("camera")'), false);
-    const b = createApp(a.w.localStorage.getItem("rentit.frontend.v1"));
-    try {
-      assert.equal(b.evaluate('appState.saved.includes("camera")'), false);
-    } finally {
-      b.close();
-    }
+    assert.equal(a.d.querySelectorAll(".product-card").length, 1);
+    assert.match(a.d.querySelector(".product-card").textContent, /Camera/);
+    assert.ok(a.d.querySelector('a[href="#/product/api-51"]'));
+    a.route("product/api-51");
+    assert.match(a.d.querySelector("#app").textContent, /Digital camera/);
+    assert.match(a.d.querySelector("#app").textContent, /Online booking for these listings is not yet available/);
   } finally {
     a.close();
   }

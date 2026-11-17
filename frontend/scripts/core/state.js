@@ -20,6 +20,9 @@ const storedState = loadLocalState();
 const appState = {
   saved: storedState.saved || ["camera", "tent"],
   messages: storedState.messages || [],
+  publicListings: [],
+  publicListingsStatus: "idle",
+  publicListingsError: "",
   ownListings: [], // Loaded from the API, never from browser storage.
   ownListingsStatus: "idle",
   ownListingsError: "",

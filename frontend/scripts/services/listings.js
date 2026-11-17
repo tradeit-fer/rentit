@@ -2,6 +2,22 @@
 "use strict";
 
 const listingService = {
+  /** Load all public listings, including subsequent pages. */
+  async getPublicListings() {
+    const results = [];
+    const limit = 100;
+    for (let page = 1; ; page++) {
+      const response = await fetch(`${API_URL}/api/v2/listings?page=${page}&limit=${limit}`, {
+        credentials: "include",
+        cache: "no-store",
+      });
+      if (!response.ok) throw new Error(`Could not load public listings (${response.status}).`);
+      const batch = await response.json();
+      if (!Array.isArray(batch)) throw new Error("Unexpected listings response.");
+      results.push(...batch);
+      if (batch.length < limit) return results;
+    }
+  },
   // The public endpoint is paginated and has no owner filter. Fetch every page
   // before selecting the signed-in user's listings.
   async getMyListings(ownerId) {
