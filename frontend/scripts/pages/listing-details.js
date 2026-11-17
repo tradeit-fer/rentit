@@ -10,6 +10,7 @@
  * @returns {string} HTML for this view.
  */
 function renderListingDetailsPage(id) {
+  if (id?.startsWith("api-")) return renderPublicListingDetails(id.slice(4));
   const p = findListing(id);
   return renderPublicLayout(
     /* HTML */ `<div class="breadcrumbs">
@@ -130,4 +131,26 @@ function renderListingDetailsPage(id) {
         </div>
       </section>`,
   );
+}
+
+/** Show actual backend listing information without inventing booking or review data. */
+function renderPublicListingDetails(encodedId) {
+  const p = appState.publicListings.find((item) => String(item.id) === decodeURIComponent(encodedId));
+  const status = appState.publicListingsStatus;
+  const content = status === "loading" || status === "idle"
+    ? '<p role="status">Loading listing…</p>'
+    : status === "error"
+      ? `<p role="alert">${escapeHtml(appState.publicListingsError)}</p>`
+      : !p
+        ? '<p role="alert">Listing not found.</p>'
+        : `<div class="section-card" style="padding:24px">
+            <h1>${escapeHtml(p.title || "Untitled listing")}</h1>
+            <p class="muted">${escapeHtml(p.category || "")} · ${escapeHtml(p.location || "")}</p>
+            <p>${escapeHtml(p.description || "No description provided.")}</p>
+            <p><strong>${formatCurrency(Number(p.price_per_day || 0) / 100)}</strong> / day</p>
+            <p>Deposit: ${formatCurrency(Number(p.deposit || 0) / 100)}</p>
+            <p>${p.is_available ? "Available" : "Currently unavailable"}</p>
+            <p class="muted">Online booking for these listings is not yet available.</p>
+          </div>`;
+  return renderPublicLayout(`<div class="breadcrumbs"><a href="#/explore">Explore</a></div>${content}`);
 }

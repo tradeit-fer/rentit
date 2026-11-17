@@ -153,7 +153,12 @@ function renderCurrentRoute() {
           support: "Help & support",
         }[base] || "Your next great plan") + " · "
       : "") + "RentIt";
-  if (base === "product" || base === "booking") updateBookingPrice();
+  if (base === "product" || base === "booking") {
+    if (!(base === "product" && id?.startsWith("api-"))) updateBookingPrice();
+  }
+  if ((base === "explore" || base === "explore-map" || base === "product" && id?.startsWith("api-")) && appState.publicListingsStatus === "idle") {
+    loadPublicListings();
+  }
   if (base === "listings" && isSignedIn() && appState.ownListingsStatus === "idle") {
     loadMyListings();
   }
@@ -177,4 +182,20 @@ async function loadMyListings() {
     appState.ownListingsStatus = "error";
   }
   if (currentRoute === "listings") renderCurrentRoute();
+}
+
+/** Load public listings once, then refresh the visible catalogue or listing details. */
+async function loadPublicListings() {
+  if (appState.publicListingsStatus !== "idle") return;
+  appState.publicListingsStatus = "loading";
+  if (currentRoute.startsWith("explore") || currentRoute.startsWith("product/api-")) renderCurrentRoute();
+  try {
+    appState.publicListings = await listingService.getPublicListings();
+    appState.publicListingsStatus = "loaded";
+    appState.publicListingsError = "";
+  } catch (error) {
+    appState.publicListingsError = error.message || "Could not load listings.";
+    appState.publicListingsStatus = "error";
+  }
+  if (currentRoute.startsWith("explore") || currentRoute.startsWith("product/api-")) renderCurrentRoute();
 }

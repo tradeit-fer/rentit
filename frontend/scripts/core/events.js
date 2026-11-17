@@ -678,6 +678,8 @@ document.addEventListener("submit", async (event) => {
           const created = await listingService.createListing(appState.listing);
           // Refresh the server-backed list after a successful creation.
           appState.ownListings = [];
+          appState.publicListings = [];
+          appState.publicListingsStatus = "idle";
           appState.ownListingsStatus = "idle";
           appState.ownListingsError = "";
           appState.listingStep = 0;

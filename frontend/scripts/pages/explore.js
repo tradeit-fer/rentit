@@ -11,7 +11,8 @@
  */
 function renderExplorePage(mapMode = false) {
   appState.map = mapMode;
-  const list = getFilteredListings();
+  const list = getFilteredPublicListings();
+  const status = appState.publicListingsStatus;
   return renderPublicLayout(
     /* HTML */ `${renderPageHeading("What do you need today?", "A great plan starts with the right thing. Find it in your neighbourhood.")}
       ${renderSearchForm()}
@@ -32,7 +33,7 @@ function renderExplorePage(mapMode = false) {
                     value="${c}"
                     ${appState.category === c ? "checked" : ""}
                   />${c}<span
-                    >${c === "All" ? sampleListings.length : sampleListings.filter((p) => p.category === c).length}</span
+                    >${c === "All" ? appState.publicListings.length : appState.publicListings.filter((p) => p.category === c).length}</span
                   >
                 </label>`,
             )
@@ -113,16 +114,15 @@ function renderExplorePage(mapMode = false) {
                 </div>`
               : ""
           }${
-            mapMode
-              ? renderIllustratedMap(true)
-              : list.length
-                ? /* HTML */ `<div class="product-grid">
-                      ${list.map(renderListingCard).join("")}
-                    </div>
-                    <p class="state-line mt28">
-                      You are viewing all listings that match your filters.
-                    </p>`
-                : /* HTML */ `<div class="empty">
+            status === "idle" || status === "loading"
+              ? '<p class="muted" role="status">Loading listings…</p>'
+              : status === "error"
+                ? `<p role="alert">${escapeHtml(appState.publicListingsError)}</p>`
+                : mapMode
+                  ? `<div class="product-grid">${list.map(renderPublicListingCard).join("")}</div><p class="state-line mt28">Map locations are not yet available for published listings.</p>`
+                  : list.length
+                    ? `<div class="product-grid">${list.map(renderPublicListingCard).join("")}</div><p class="state-line mt28">You are viewing all listings that match your filters.</p>`
+                    : /* HTML */ `<div class="empty">
                     <div class="empty-icon">${renderIcon("search")}</div>
                     <h2>We could not find that item.</h2>
                     <p>Try another search, a broader category or a higher price limit.</p>
@@ -132,4 +132,37 @@ function renderExplorePage(mapMode = false) {
         </section>
       </div>`,
   );
+}
+
+/** Apply catalogue filters to the real API response (prices are stored in cents). */
+function getFilteredPublicListings() {
+  let list = appState.publicListings.filter((p) => {
+    const price = Number(p.price_per_day || 0) / 100;
+    return (appState.category === "All" || p.category === appState.category) &&
+      price <= appState.maxPrice &&
+      (!appState.query || [p.title, p.category, p.description].join(" ").toLocaleLowerCase("en").includes(appState.query.toLocaleLowerCase("en"))) &&
+      (!appState.location || String(p.location || "").toLocaleLowerCase("en").includes(appState.location.toLocaleLowerCase("en")) || appState.location.toLowerCase() === "zagreb and nearby") &&
+      (!appState.availableOnly || p.is_available) &&
+      (!appState.verifiedOnly || p.owner?.is_verified === true);
+  });
+  if (appState.sort === "price-up") list.sort((a, b) => a.price_per_day - b.price_per_day);
+  if (appState.sort === "price-down") list.sort((a, b) => b.price_per_day - a.price_per_day);
+  return list;
+}
+
+/** Backend listings do not have the demo catalogue's images, ratings or reviews. */
+function renderPublicListingCard(p) {
+  const id = encodeURIComponent(String(p.id));
+  const title = escapeHtml(p.title || "Untitled listing");
+  const category = escapeHtml(p.category || "");
+  const location = escapeHtml(p.location || "Location not specified");
+  return `<article class="product-card">
+    <div class="product-photo"><a href="#/product/api-${id}" aria-label="View ${title}">
+      <img src="assets/images/calculator.svg" alt="No listing photo available" loading="lazy" />
+    </a></div>
+    <div class="product-info"><div class="loc">${renderIcon("pin")}${location} · ${category}</div>
+      <a href="#/product/api-${id}"><h3>${title}</h3></a>
+      <div class="product-meta"><span><b>${formatCurrency(Number(p.price_per_day || 0) / 100)}</b> <small>/ day</small></span></div>
+    </div>
+  </article>`;
 }
