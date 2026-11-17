@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, computed_field
+from pydantic import BaseModel, Field, computed_field, AliasChoices
 from datetime import datetime
 from typing import List, Optional
 
@@ -22,7 +22,7 @@ class LocationORM(BaseModel):
 # vlasnik oglasa
 class OwnerInfo(BaseModel):
     id: str         # u bazi je ownerID String(255)
-    full_name: str = Field(validation_alias="name")
+    full_name: str = Field(validation_alias=AliasChoices("full_name", "name"))
     rating: float = 5.0 # defaultna vrijednost ratinga je 5.0
     reviews_count: int = 0
 
@@ -47,7 +47,7 @@ class ListingResponse(BaseModel):
     title: str
     description: Optional[str] = None
 
-    price_per_day: int = Field(..., alias = "price_cents")
+    price_per_day: int = Field(..., validation_alias = "price_cents")
     deposit: int = Field(default = 0, validation_alias="deposit_cents")
     currency: str = "EUR"
 
