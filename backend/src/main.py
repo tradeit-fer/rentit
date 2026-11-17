@@ -14,6 +14,7 @@ from src.authorization import require_admin
 from src.controllers.auth import router as auth_router
 from src.controllers.listings import router as listings_router
 from src.controllers.rentals import router as rentals_router
+from src.controllers.user_profiles import router as user_profiles_router
 from src.models.users import User
 
 app = FastAPI(
@@ -53,6 +54,7 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(listings_router)
 app.include_router(rentals_router)
+app.include_router(user_profiles_router)
 
 
 
