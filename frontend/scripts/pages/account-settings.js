@@ -24,7 +24,7 @@ function renderSettingsPage() {
             ${[["First name", appState.profile.first], ["Last name", appState.profile.last], ["Email", appState.profile.email], ["Phone number", appState.profile.phone], ["City", appState.profile.city], ["Display name", appState.profile.display_name]].map(([label, value]) => `<div class="field"><label>${label}</label><p>${escapeHtml(value || "Not provided")}</p></div>`).join("")}
           </div>
           <div class="field">
-            <label for="bio">About me</label>
+            <span class="field-label">About me</span>
             <p class="small">${escapeHtml(appState.profile.bio || "Not provided")}</p>
           </div>
           <p class="small mt12">Profile changes cannot be saved until a backend update endpoint is available.</p>

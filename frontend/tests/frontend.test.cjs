@@ -176,11 +176,10 @@ test("listing wizard requires authentication to publish", () => {
     a.submit("#listing-form");
     assert.equal(a.evaluate("appState.listingStep"), 1);
     a.submit("#listing-form");
-    assert.equal(a.evaluate("appState.listingStep"), 1);
-    a.click('[data-action="sample-photos"]');
-    a.submit("#listing-form");
+    assert.equal(a.evaluate("appState.listingStep"), 2);
     a.field("#listing-price", "20");
     a.submit("#listing-form");
+    assert.equal(a.evaluate("appState.listingStep"), 3);
     a.field('[name="listing-terms"]', true);
     a.submit("#listing-form");
     assert.equal(a.evaluate("appState.ownListings.length"), 0);
