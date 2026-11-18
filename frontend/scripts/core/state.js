@@ -21,6 +21,7 @@ const appState = {
   saved: storedState.saved || ["camera", "tent"],
   messages: storedState.messages || [],
   publicListings: [],
+  categoryCounts: null,
   publicListingsStatus: "idle",
   publicListingsError: "",
   ownListings: [], // Loaded from the API, never from browser storage.
@@ -36,9 +37,9 @@ const appState = {
   category: "All",
   maxPrice: 100,
   sort: "recommended",
-  location: "Zagreb",
+  location: "",
   verifiedOnly: false,
-  availableOnly: false,
+  availableOnly: true,
   searchStart: "",
   searchEnd: "",
   map: false,
@@ -205,8 +206,8 @@ function captureListingDraft() {
     d.price = Number(selectElement("#listing-price")?.value || d.price);
     d.deposit = Number(selectElement("#listing-deposit")?.value || 0);
     d.location = selectElement("#listing-location")?.value || d.location;
-    d.from = selectElement("#listing-from")?.value;
-    d.to = selectElement("#listing-to")?.value;
+    d.from = parseDateInput(selectElement("#listing-from")?.value);
+    d.to = parseDateInput(selectElement("#listing-to")?.value);
     d.condition = selectElement("#listing-condition")?.value;
   }
 }

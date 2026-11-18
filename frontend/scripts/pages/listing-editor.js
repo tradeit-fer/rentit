@@ -12,6 +12,9 @@
 function renderListingWizardPage(edit = false) {
   const n = appState.listingStep,
     d = appState.listing;
+  // Default only new drafts to the user's local calendar date.
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
   const titles = [
     "First, tell us about your item.",
     "Photos that tell the story.",
@@ -108,7 +111,7 @@ ${escapeHtml(d.description)}</textarea>
       <hr />
       <h3>Availability</h3>
       <div class="form-grid mt20">
-        ${renderInputField("Available from", "listing-from", d.from || "2026-10-16", "date", "required")}${renderInputField("Available until", "listing-to", d.to || "2026-12-31", "date", "required")}
+        <div class="field"><label for="listing-from">Available from</label><input id="listing-from" name="listing-from" type="text" value="${formatDateForInput(d.from || today)}" placeholder="DD/MM/YYYY" inputmode="numeric" autocomplete="off" required /></div><div class="field"><label for="listing-to">Available until</label><input id="listing-to" name="listing-to" type="text" value="${formatDateForInput(d.to || "2026-12-31")}" placeholder="DD/MM/YYYY" inputmode="numeric" autocomplete="off" required /></div>
       </div>
       <div class="field">
         <label for="listing-condition">Item condition</label>
@@ -142,7 +145,7 @@ ${escapeHtml(d.description)}</textarea>
       </div>
       <div class="cost-row">
         <span>Available</span>
-        <strong>${formatDate(d.from || "2026-10-16")} – ${formatDate(d.to || "2026-12-31")}</strong>
+        <strong>${formatDate(d.from || today)} – ${formatDate(d.to || "2026-12-31")}</strong>
       </div>
       <div class="cost-row">
         <span>Photos</span>${renderBadge("Not uploaded", "gray")}

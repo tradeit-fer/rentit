@@ -5,6 +5,8 @@
 "use strict";
 
 let currentRoute = "",
+  publicListingsRequestKey = "",
+  publicListingsRequestId = 0,
   lastModalFocus = null,
   toastTimer;
 
@@ -25,6 +27,7 @@ function navigateTo(route) {
  * @returns {void}
  */
 function renderCurrentRoute() {
+  const previousRoute = currentRoute;
   currentRoute = decodeURIComponent(location.hash.replace(/^#\/?/, ""));
   closeModal();
   const [base, id] = currentRoute.split("/");
@@ -156,8 +159,15 @@ function renderCurrentRoute() {
   if (base === "product" || base === "booking") {
     if (!(base === "product" && id?.startsWith("api-"))) updateBookingPrice();
   }
-  if ((base === "explore" || base === "explore-map" || base === "product" && id?.startsWith("api-")) && appState.publicListingsStatus === "idle") {
-    loadPublicListings();
+  if (base === "explore" || base === "explore-map") {
+    const key = JSON.stringify(getPublicListingApiFilters());
+    const enteringExplore = !previousRoute.startsWith("explore");
+    if (appState.publicListingsStatus !== "loading" &&
+        (appState.publicListingsStatus === "idle" || key !== publicListingsRequestKey || enteringExplore)) {
+      loadPublicListings(key);
+    }
+  } else if (base === "product" && id?.startsWith("api-") && appState.publicListingsStatus === "idle") {
+    loadPublicListings(JSON.stringify(getPublicListingApiFilters()));
   }
   if (base === "listings" && isSignedIn() && appState.ownListingsStatus === "idle") {
     loadMyListings();
@@ -184,16 +194,44 @@ async function loadMyListings() {
   if (currentRoute === "listings") renderCurrentRoute();
 }
 
-/** Load public listings once, then refresh the visible catalogue or listing details. */
-async function loadPublicListings() {
-  if (appState.publicListingsStatus !== "idle") return;
+/** Translate Explore filters to supported GET /api/v2/listings query parameters. */
+function getPublicListingApiFilters() {
+  const filters = {};
+  if (appState.query.trim()) filters.search = appState.query.trim();
+  if (appState.category !== "All") filters.category = appState.category;
+  if (Number.isFinite(appState.maxPrice)) filters.max_price = Math.round(appState.maxPrice * 100);
+  filters.sort = appState.sort === "price-up" ? "price_asc" :
+    appState.sort === "price-down" ? "price_desc" : "newest";
+  return filters;
+}
+
+/** Reload on filter changes or re-entry; ignore responses from older requests. */
+async function loadPublicListings(key = JSON.stringify(getPublicListingApiFilters())) {
+  const requestId = ++publicListingsRequestId;
+  publicListingsRequestKey = key;
   appState.publicListingsStatus = "loading";
   if (currentRoute.startsWith("explore") || currentRoute.startsWith("product/api-")) renderCurrentRoute();
   try {
-    appState.publicListings = await listingService.getPublicListings();
+    // Category totals describe the entire public catalogue, not the selected category.
+    // Cache them separately from filtered search results.
+    if (!appState.categoryCounts) {
+      const allListings = await listingService.getPublicListings();
+      if (requestId !== publicListingsRequestId) return;
+      const counts = { All: 0 };
+      for (const item of allListings) {
+        if (item.is_available !== true) continue;
+        counts.All++;
+        counts[item.category] = (counts[item.category] || 0) + 1;
+      }
+      appState.categoryCounts = counts;
+    }
+    const listings = await listingService.getPublicListings(JSON.parse(key));
+    if (requestId !== publicListingsRequestId) return;
+    appState.publicListings = listings;
     appState.publicListingsStatus = "loaded";
     appState.publicListingsError = "";
   } catch (error) {
+    if (requestId !== publicListingsRequestId) return;
     appState.publicListingsError = error.message || "Could not load listings.";
     appState.publicListingsStatus = "error";
   }

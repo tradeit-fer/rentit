@@ -53,16 +53,9 @@ function renderSearchForm() {
         <input
           id="search-location"
           name="location"
-          placeholder="Zagreb and nearby"
+          placeholder="Anywhere (enter a city)"
           value="${escapeHtml(appState.location)}"
         />
-      </div>
-    </div>
-    <div class="searchcell">
-      ${renderIcon("calendar")}
-      <div>
-        <label for="search-start">From when?</label>
-        <input id="search-start" name="start" type="date" value="${appState.searchStart}" />
       </div>
     </div>
     <button class="btn" type="submit">${renderIcon("search")}<span>Search</span></button>

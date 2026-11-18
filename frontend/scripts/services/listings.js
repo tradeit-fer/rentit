@@ -3,11 +3,15 @@
 
 const listingService = {
   /** Load all public listings, including subsequent pages. */
-  async getPublicListings() {
+  async getPublicListings(filters = {}) {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(filters)) {
+      if (value !== null && value !== undefined && value !== "") params.set(key, String(value));
+    }
     const results = [];
     const limit = 100;
     for (let page = 1; ; page++) {
-      const response = await fetch(`${API_URL}/api/v2/listings?page=${page}&limit=${limit}`, {
+      const response = await fetch(`${API_URL}/api/v2/listings?${params.toString()}${params.size ? "&" : ""}page=${page}&limit=${limit}`, {
         credentials: "include",
         cache: "no-store",
       });
