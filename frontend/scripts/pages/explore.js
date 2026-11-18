@@ -33,7 +33,7 @@ function renderExplorePage(mapMode = false) {
                     value="${c}"
                     ${appState.category === c ? "checked" : ""}
                   />${c}<span
-                    >${c === "All" ? appState.publicListings.length : appState.publicListings.filter((p) => p.category === c).length}</span
+                    >${appState.categoryCounts?.[c] ?? 0}</span
                   >
                 </label>`,
             )
@@ -52,19 +52,6 @@ function renderExplorePage(mapMode = false) {
             <span>1 €</span>
             <span id="price-label">Up to ${appState.maxPrice} €</span>
           </div>
-          <hr />
-          <h4>Availability</h4>
-          <div class="field">
-            <label for="filter-date" class="muted">Pickup date</label>
-            <input type="date" id="filter-date" value="${appState.searchStart}" />
-          </div>
-          <label class="checkrow mt12">
-            <input
-              id="available-filter"
-              type="checkbox"
-              ${appState.availableOnly ? "checked" : ""}
-            />Available today</label
-          >
           <hr />
           <h4>More options</h4>
           <label class="checkrow">
@@ -142,7 +129,7 @@ function getFilteredPublicListings() {
       price <= appState.maxPrice &&
       (!appState.query || [p.title, p.category, p.description].join(" ").toLocaleLowerCase("en").includes(appState.query.toLocaleLowerCase("en"))) &&
       (!appState.location || String(p.location || "").toLocaleLowerCase("en").includes(appState.location.toLocaleLowerCase("en")) || appState.location.toLowerCase() === "zagreb and nearby") &&
-      (!appState.availableOnly || p.is_available) &&
+      p.is_available === true &&
       (!appState.verifiedOnly || p.owner?.is_verified === true);
   });
   if (appState.sort === "price-up") list.sort((a, b) => a.price_per_day - b.price_per_day);

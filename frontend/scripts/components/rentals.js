@@ -37,17 +37,35 @@ function renderPriceBreakdown(p, days = 3) {
  * @param {*} end See docs/ARCHITECTURE.md for data flow and page variants.
  * @returns {string} HTML for this view.
  */
+function formatDateForInput(iso) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
+  return match ? `${match[3]}/${match[2]}/${match[1]}` : "";
+}
+
+function parseDateInput(value) {
+  const raw = String(value || "").trim();
+  // Accept both 25/11/2026 and 25112026; format on blur, not mid-keystroke.
+  const compact = /^\d{8}$/.test(raw) ? `${raw.slice(0, 2)}/${raw.slice(2, 4)}/${raw.slice(4)}` : raw;
+  const match = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(compact);
+  if (!match) return /^\d{4}-\d{2}-\d{2}$/.test(raw) ? raw : null;
+  const day = Number(match[1]), month = Number(match[2]), year = Number(match[3]);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) return null;
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
 function renderDateFields(start = "2026-10-16", end = "2026-10-19") {
   return /* HTML */ `<div class="date-grid mt20">
       <div class="field">
         <label for="date-start">Pickup</label>
-        <input name="start" type="date" id="date-start" value="${start}" required />
+        <input name="start" type="text" id="date-start" value="${formatDateForInput(start)}" placeholder="DD/MM/YYYY" inputmode="numeric" autocomplete="off" aria-describedby="date-format-hint" required />
       </div>
       <div class="field">
         <label for="date-end">Return</label>
-        <input name="end" type="date" id="date-end" value="${end}" required />
+        <input name="end" type="text" id="date-end" value="${formatDateForInput(end)}" placeholder="DD/MM/YYYY" inputmode="numeric" autocomplete="off" aria-describedby="date-format-hint" required />
       </div>
     </div>
+    <p id="date-format-hint" class="small muted">Enter dates as day/month/year (DD/MM/YYYY).</p>
     <p id="date-error" class="small" style="color:#b2574a;display:none" role="alert">
       The return date must be after the pickup date.
     </p>`;
@@ -174,9 +192,10 @@ function updateBookingPrice() {
   const a = selectElement("#date-start"),
     b = selectElement("#date-end");
   if (!a || !b) return null;
-  const days = Math.round(
-      (new Date(b.value + "T12:00:00") - new Date(a.value + "T12:00:00")) / 86400000,
-    ),
+  const startISO = parseDateInput(a.value), endISO = parseDateInput(b.value);
+  const days = startISO && endISO ? Math.round(
+      (new Date(endISO + "T12:00:00") - new Date(startISO + "T12:00:00")) / 86400000,
+    ) : NaN,
     valid = Number.isFinite(days) && days > 0;
   selectElement("#date-error").style.display = valid ? "none" : "block";
   const form = a.closest("form"),
@@ -189,8 +208,8 @@ function updateBookingPrice() {
     if (old) old.innerHTML = renderPriceBreakdown(p, days);
     return {
       product: id,
-      start: a.value,
-      end: b.value,
+      start: startISO,
+      end: endISO,
       days,
       subtotal,
       fee,

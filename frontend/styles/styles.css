@@ -906,13 +906,14 @@ hr {
   display: flex;
   align-items: stretch;
   transform: translateY(-50%);
-  transition: transform 220ms ease;
+  opacity: .88;
+  transition: transform 220ms ease, opacity 180ms ease;
   box-shadow: 0 5px 22px #133e3925;
   border-radius: 0 11px 11px 0;
   overflow: hidden;
 }
 .screen-navigator.is-collapsed {
-  transform: translate(calc(-100% + 34px), -50%);
+  transform: translate(calc(-100% + 24px), -50%);
 }
 .screen-navigator-toggle,
 .screen-navigator-handle {
@@ -943,13 +944,16 @@ hr {
   font-size: 10px;
 }
 .screen-navigator-handle {
-  flex: 0 0 34px;
-  width: 34px;
+  flex: 0 0 24px;
+  width: 24px;
   padding: 0;
-  font-size: 26px;
+  font-size: 18px;
+  font-weight: 600;
   line-height: 1;
   border-left: 1px solid #ffffff32;
 }
+.screen-navigator:hover { opacity: 1; }
+.screen-navigator-handle span { display: block; width: 100%; text-align: center; line-height: 1; }
 .screen-navigator-handle:hover,
 .screen-navigator-toggle:hover {
   background: #2c5145;

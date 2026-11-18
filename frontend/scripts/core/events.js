@@ -103,9 +103,9 @@ document.addEventListener("click", async (event) => {
       appState.query = "";
       appState.maxPrice = 100;
       appState.sort = "recommended";
-      appState.location = "Zagreb";
+      appState.location = "";
       appState.verifiedOnly = false;
-      appState.availableOnly = false;
+      appState.availableOnly = true;
       appState.searchStart = "";
       renderCurrentRoute();
       break;
@@ -562,7 +562,6 @@ document.addEventListener("submit", async (event) => {
     case "search-form":
       appState.query = String(f.get("query") || "").trim();
       appState.location = String(f.get("location") || "").trim();
-      appState.searchStart = String(f.get("start") || "");
       navigateTo("explore");
       break;
     case "product-booking-form": {
@@ -645,6 +644,14 @@ document.addEventListener("submit", async (event) => {
       showToast("Your review has been published.");
       break;
     case "listing-form": {
+      if (appState.listingStep === 2) {
+        const from = parseDateInput(selectElement("#listing-from")?.value);
+        const to = parseDateInput(selectElement("#listing-to")?.value);
+        if (!from || !to) {
+          showToast("Enter valid dates as DD/MM/YYYY.");
+          break;
+        }
+      }
       captureListingDraft();
       const n = appState.listingStep;
       if (n === 2 && appState.listing.to < appState.listing.from) {
@@ -679,6 +686,7 @@ document.addEventListener("submit", async (event) => {
           // Refresh the server-backed list after a successful creation.
           appState.ownListings = [];
           appState.publicListings = [];
+          appState.categoryCounts = null;
           appState.publicListingsStatus = "idle";
           appState.ownListingsStatus = "idle";
           appState.ownListingsError = "";
@@ -874,15 +882,9 @@ document.addEventListener("change", (event) => {
     appState.verifiedOnly = el.checked;
     renderCurrentRoute();
   }
-  if (el.id === "available-filter") {
-    appState.availableOnly = el.checked;
-    renderCurrentRoute();
+  if (el.id === "date-start" || el.id === "date-end") {
+    updateBookingPrice();
   }
-  if (el.id === "filter-date") {
-    appState.searchStart = el.value;
-    renderCurrentRoute();
-  }
-  if (el.id === "date-start" || el.id === "date-end") updateBookingPrice();
   if (el.id === "ticket-priority") filterAdminRequests();
   if (el.dataset.upload && el.files?.[0]) {
     const file = el.files[0];
@@ -965,4 +967,12 @@ document.addEventListener("keydown", (event) => {
       first?.focus();
     }
   }
+});
+
+// Normalize valid dates when the user leaves a field; never interrupt typing.
+document.addEventListener("focusout", (event) => {
+  const el = event.target;
+  if (!["date-start", "date-end", "listing-from", "listing-to"].includes(el.id)) return;
+  const iso = parseDateInput(el.value);
+  if (iso) el.value = formatDateForInput(iso);
 });

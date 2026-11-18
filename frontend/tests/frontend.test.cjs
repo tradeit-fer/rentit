@@ -116,22 +116,47 @@ test("all 35 routes and additional states render with valid local assets and lab
   }
 });
 
-test("Public catalogue filters real backend listings and keeps saved preferences", () => {
-  const a = createApp();
+test("Explore sends search, category, price and sorting to Listings API", async () => {
+  const urls = [];
+  const camera = {id: 51, title: "Camera", category: "Photo & video", location: "Zagreb", description: "Digital camera", price_per_day: 500, deposit: 1000, is_available: true};
+  const a = createApp(null, async (url) => {
+    const value = String(url);
+    if (value.includes("/api/v2/listings?")) {
+      urls.push(value);
+      return {ok: true, json: async () => [camera]};
+    }
+    return new Promise(() => {});
+  });
+  const waitForLoaded = async () => {
+    for (let i = 0; i < 20 && a.evaluate("appState.publicListingsStatus") !== "loaded"; i++)
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    assert.equal(a.evaluate("appState.publicListingsStatus"), "loaded");
+  };
   try {
-    a.evaluate(`appState.publicListings = [
-      {id: 51, title: "Camera", category: "Photo & video", location: "Zagreb", description: "Digital camera", price_per_day: 500, deposit: 1000, is_available: true},
-      {id: 52, title: "Drill", category: "Tools", location: "Zagreb", description: "Power drill", price_per_day: 800, deposit: 1000, is_available: true}
-    ]; appState.publicListingsStatus = "loaded";`);
+    a.route("explore");
+    await waitForLoaded();
+    assert.match(a.d.querySelector(".filters").textContent, /All\s*1/);
     a.field('[name="query"]', "camera");
     a.submit("#search-form");
-    a.route("explore");
+    await waitForLoaded();
+    assert.ok(urls.some((url) => url.includes("search=camera")));
     assert.equal(a.d.querySelectorAll(".product-card").length, 1);
-    assert.match(a.d.querySelector(".product-card").textContent, /Camera/);
     assert.ok(a.d.querySelector('a[href="#/product/api-51"]'));
+    a.evaluate('appState.category = "Photo & video"; appState.maxPrice = 20; appState.sort = "price-up"');
+    a.route("explore");
+    await waitForLoaded();
+    const latest = new URL(urls.at(-1));
+    assert.equal(latest.searchParams.get("category"), "Photo & video");
+    assert.equal(latest.searchParams.get("max_price"), "2000");
+    assert.equal(latest.searchParams.get("sort"), "price_asc");
+    assert.match(a.d.querySelector(".filters").textContent, /All\s*1/, "category totals stay stable after filtering");
+    a.route("dashboard");
+    const count = urls.length;
+    a.route("explore");
+    await waitForLoaded();
+    assert.ok(urls.length > count, "re-entering Explore refreshes the catalogue");
     a.route("product/api-51");
     assert.match(a.d.querySelector("#app").textContent, /Digital camera/);
-    assert.match(a.d.querySelector("#app").textContent, /Online booking for these listings is not yet available/);
   } finally {
     a.close();
   }
@@ -141,6 +166,10 @@ test("booking rejects reversed dates and calculates the configured platform fee"
   const a = createApp();
   try {
     a.route("product/camera");
+    assert.equal(a.d.querySelector("#date-start").type, "text");
+    assert.equal(a.d.querySelector("#date-start").placeholder, "DD/MM/YYYY");
+    assert.equal(a.evaluate('parseDateInput("20112026")'), "2026-11-20");
+    assert.equal(a.evaluate('parseDateInput("31/02/2026")'), null);
     a.field("#date-start", "2026-11-20");
     a.field("#date-end", "2026-11-19");
     a.submit("#product-booking-form");
@@ -458,5 +487,21 @@ test("v2 profile data fills optional fields and does not show fake verification 
     a.route("settings");
     assert.match(a.d.querySelector("main").textContent, /Mia N/);
     assert.equal(a.d.querySelector("#settings-form"), null);
+  } finally { a.close(); }
+});
+
+test("listing availability fields use day/month/year text input", () => {
+  const a = createApp();
+  try {
+    a.evaluate("appState.listingStep = 2");
+    a.route("new-listing");
+    const from = a.d.querySelector("#listing-from");
+    assert.equal(from.type, "text");
+    assert.match(from.value, /^\d{2}\/\d{2}\/\d{4}$/);
+    a.field("#listing-from", "25112026");
+    from.dispatchEvent(new a.w.Event("focusout", { bubbles: true }));
+    assert.equal(from.value, "25/11/2026");
+    a.evaluate("captureListingDraft()");
+    assert.equal(a.evaluate("appState.listing.from"), "2026-11-25");
   } finally { a.close(); }
 });

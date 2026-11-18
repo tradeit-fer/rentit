@@ -212,9 +212,6 @@
   .searchbar .searchcell {
     padding: 6px 10px;
   }
-  .searchbar .searchcell:nth-child(3) {
-    display: none;
-  }
   .mobile-nav {
     display: flex;
     gap: 6px;
