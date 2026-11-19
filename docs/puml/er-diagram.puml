@@ -1,7 +1,17 @@
 
 @startuml
-hide circle
-skinparam linetype ortho
+title Sustav CrisisMap – logički podatkovni model
+left to right direction
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam ArrowColor #212529
+
+skinparam entity {
+    BackgroundColor #E7F1FF
+    BorderColor #0D6EFD
+    FontColor #212529
+}
 
 entity users {
     * id : string <<PK>>
