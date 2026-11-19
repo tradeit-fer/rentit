@@ -1,16 +1,16 @@
-# [Naziv aplikacije] — Projektna dokumentacija
+# RentIt — Projektna dokumentacija
 
 **Kolegij:** [Programsko inženjerstvo](https://www.fer.unizg.hr/predmet/proinz), Fakultet elektrotehnike i računarstva Sveučilišta u Zagrebu  
-**Akademska godina:** [20XX./20XX.]  
-**Tim:** [Oznaka i naziv tima]  
+**Akademska godina:** 2026./2027.  
+**Tim:** Sibirski plavac  
 **Nastavnik:** Vlado Sruk  
-**Asistent / demonstrator:** [Ime i uloga u ovom izvođenju kolegija]
+**Asistent / demonstrator:** Asistent Lovro Bosnar / Demonstratorica Eda Jovičić
 
 ## Pregled projekta
 
 **Cilj:** Omogućiti čitatelju koji prvi put vidi projekt da u dvije ili tri rečenice prepozna aplikaciju, njezine ciljane korisnike i glavnu svrhu.
 
-[Opis projekta.]
+Za projekt se gradi aplikacija RentIt koja omogućava korisnicima najam stvari kako ne bi trebali kupovati za mali broj korištenja.
 
 <details>
 <summary><strong>Sažet pregled projekta</strong></summary>
