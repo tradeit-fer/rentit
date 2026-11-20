@@ -35,7 +35,7 @@ Kratice: `PK` = Pavao Knez; `VL` = Viktor Lazić; `AW` = Adam Winkler; `LD` = Lu
 | Aktivnost ili rezultat | Član | Prijavljeni sati |
 | --- | --- | --- |
 |  | Pavao Knez |  |
-|  | Viktor Lazić |  |
+| Izrada API-ja za pretragu i filtriranje | Viktor Lazić | 20 |
 |  | Adam Winkler |  |
 |  | Lukas Davorija |  |
 |  | Matej Miličević |  |
