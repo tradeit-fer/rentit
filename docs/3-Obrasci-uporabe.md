@@ -49,12 +49,12 @@
 
 | Polje | Opis |
 | --- | --- |
-| Primarni akter | Korisnik |
+| Primarni akter | Korisnik, gost |
 | ID zahtjeva | F-004 |
-| Preduvjeti, ako postoje | Korisnik registriran. |
-| Glavni tijek | Detalji prikazuju opis, fotografije kada su primjenjive, cijenu i jedinicu obračuna, javnu lokaciju, raspoloživost, uvjete te profil ponuditelja.  |
+| Preduvjeti, ako postoje | - |
+| Glavni tijek | 1. Korisnik/gost je na početnoj stranici te vidi početne oglase.<br>2. Korisnik/gost može listati kroz oglase skrolanjem.  |
 | Alternativni ili neuspješni tijekovi, ako postoje | - |
-| Rezultat | Prikaz oglasa. |
+| Rezultat | Prikaz više oglasa. |
 
 
 **UC-004: Zahtjev za najam**
@@ -68,7 +68,29 @@
 | Alternativni ili neuspješni tijekovi, ako postoje | Ponovljeno slanje iste radnje ne stvara dodatni zahtjev. Vlastiti oglas i nevaljan termin nije moguće rezervirati. |
 | Rezultat | Zahtjev prihvaćen ili odbijen. |
 
-**UC-005: Moderiranje oglasa**
+**UC-005: Recenzija**
+
+| Polje | Opis |
+| --- | --- |
+| Primarni akter | Korisnik |
+| ID zahtjeva | F-010 |
+| Preduvjeti, ako postoje | Završen najam. |
+| Glavni tijek | 1. Korisnik otvori završeni najam.<br>2. Korsinik započne pisanje recenzije za najam ili najmodavca.<br>3. Korisnik predaje recenziju. |
+| Alternativni ili neuspješni tijekovi, ako postoje | - |
+| Rezultat | Oglas ili najmodavac dobe recenziju. |
+
+**UC-006: Uređivanje vlastitog profila**
+
+| Polje | Opis |
+| --- | --- |
+| Primarni akter | Korisnik |
+| ID zahtjeva | F-011 |
+| Preduvjeti, ako postoje | Korisnik je registriran. |
+| Glavni tijek | 1. Korisnik otvara svoj profil.<br>2. Korisnik pokreće uređivanje profila.<br>3. Korisnik završava uređenje. |
+| Alternativni ili neuspješni tijekovi, ako postoje | 1. Korisnik otvara svoj profil.<br>2. Korisnik pokreće uređivanje profila.<br>3. Korisnik odustaje od promjena. |
+| Rezultat | Ažuriran profil. |
+
+**UC-007: Moderiranje oglasa**
 
 | Polje | Opis |
 | --- | --- |
