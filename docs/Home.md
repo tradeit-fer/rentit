@@ -28,23 +28,23 @@ Ažurirani popis članova, njihovih GitHub profila i glavnih uloga ili doprinosa
 
 ## Kazalo dokumentacije
 
-| Stranica | Svrha |
-| --- | --- |
-| [1. Opseg projekta](1-Projekt.md) | Problem, cilj i granice projekta |
-| [2. Analiza zahtjeva](2-Analiza-zahtjeva.md) | Zahtjevi, ograničenja i sljedivost |
-| [3. Obrasci uporabe](3-Obrasci-uporabe.md) | Akteri i reprezentativne interakcije korisnika |
-| [4. Arhitektura i oblikovanje](4-Arhitektura-i-oblikovanje.md) | Glavne odluke oblikovanja, struktura, podaci i ponašanje |
-| [5. Ispitivanje](5-Ispitivanje.md) | Pristup ispitivanju, stvarni rezultati i poznati nedostaci |
+| Stranica                                                                                      | Svrha                                                                   |
+| --------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| [1. Opseg projekta](1-Projekt.md)                                                             | Problem, cilj i granice projekta                                        |
+| [2. Analiza zahtjeva](2-Analiza-zahtjeva.md)                                                  | Zahtjevi, ograničenja i sljedivost                                      |
+| [3. Obrasci uporabe](3-Obrasci-uporabe.md)                                                    | Akteri i reprezentativne interakcije korisnika                          |
+| [4. Arhitektura i oblikovanje](4-Arhitektura-i-oblikovanje.md)                                | Glavne odluke oblikovanja, struktura, podaci i ponašanje                |
+| [5. Ispitivanje](5-Ispitivanje.md)                                                            | Pristup ispitivanju, stvarni rezultati i poznati nedostaci              |
 | [6. Postavljanje, instalacija i konfiguracija](6-Postavljanje-instalacija-i-konfiguracija.md) | Lokalna instalacija, konfiguracija, javno postavljanje i administracija |
-| [7. Zaključak i budući rad](7-Zakljucak-i-buduci-rad.md) | Zaključak i moguća daljnja poboljšanja |
-| [A. Pregled aktivnosti grupe](A-Pregled-aktivnosti-grupe.md) | Aktivnosti tima, doprinosi i izazovi |
+| [7. Zaključak i budući rad](7-Zakljucak-i-buduci-rad.md)                                      | Zaključak i moguća daljnja poboljšanja                                  |
+| [A. Pregled aktivnosti grupe](A-Pregled-aktivnosti-grupe.md)                                  | Aktivnosti tima, doprinosi i izazovi                                    |
 
 ## Ključne točke projekta
 
-| Kontrolna točka | Demonstracija | Video |
-| --- | --- | --- |
-| Iteracija 1 | [Poveznica na demonstraciju ili inačicu projekta] | [Poveznica na video Demo 1, ako je snimljen] |
-| Završni pregled | [Poveznica na završnu inačicu projekta] | [Poveznica na video završne demonstracije, ako je snimljen] |
+| Kontrolna točka | Demonstracija                                     | Video                                                       |
+| --------------- | ------------------------------------------------- | ----------------------------------------------------------- |
+| Iteracija 1     | [Poveznica na demonstraciju ili inačicu projekta] | [Poveznica na video Demo 1, ako je snimljen]                |
+| Završni pregled | [Poveznica na završnu inačicu projekta]           | [Poveznica na video završne demonstracije, ako je snimljen] |
 
 Dokumentacija se kontinuirano ažurira kako se aplikacija razvija.
 
@@ -73,7 +73,7 @@ Nastavni primjeri pretpostavljaju React/Vite klijentski dio, Node.js poslužitel
 
 Za obrazac uporabe podnošenja prijave kriznog događaja u CrisisMapu tim može čuvati UML izvor u `.puml` datoteci, prikazati odgovarajuću sliku na relevantnoj stranici dokumentacije te ažurirati oboje kada se interakcija promijeni. Koristite stvarni dijagram i stvarno postavljanje vlastitog projekta. Domena ili tehnologija prikazana u primjeru ne postaje zahtjev osim ako je dio odobrenog zadatka.
 
->Napomena o primjerima: Blokovi „Primjer — CrisisMap" nastavni su scenarij, a ne rezultat ičijeg projekta; ne prepisujte ih. U primjerima se koriste React, Node.js, PostgreSQL, Render i Selenium samo radi dosljednosti. Vaš stog može biti drukčiji (npr. Java/Spring); dokumentirajte ono što stvarno koristite.</details>
+> Napomena o primjerima: Blokovi „Primjer — CrisisMap" nastavni su scenarij, a ne rezultat ičijeg projekta; ne prepisujte ih. U primjerima se koriste React, Node.js, PostgreSQL, Render i Selenium samo radi dosljednosti. Vaš stog može biti drukčiji (npr. Java/Spring); dokumentirajte ono što stvarno koristite.</details>
 
 ## Akademski integritet, ponašanje i licenciranje
 
@@ -87,32 +87,32 @@ Kratak sažetak: [README – Uporaba umjetne inteligencije](../README_PREDLOZAK.
 
 ### Korišteni alati
 
-| Alat | Inačica ili model | Koristio/la | Glavna svrha |
-| --- | --- | --- | --- |
-| [Naziv alata] | [Inačica ili model, ako je poznat] | [Član/članovi tima] | [npr. izrada nacrta dokumentacije, generiranje izvora dijagrama] |
+| Alat             | Inačica ili model | Koristio/la | Glavna svrha                                                                                                       |
+| ---------------- | ----------------- | ----------- | ------------------------------------------------------------------------------------------------------------------ |
+| ChatGPT (OpenAI) | Atra 6.0          | Pavao Knez  | Pomoć pri razumijevanju tehničkih rješenja, otklanjanju pogrešaka te pripremi pojedinih prijedloga koda i testova. |
 
 ### Opseg doprinosa umjetne inteligencije
 
-| Stranica, datoteka ili artefakt | Vrsta pomoći | Što je alat proizveo | Što je tim zadao i promijenio | Lokacija |
-| --- | --- | --- | --- | --- |
-| [npr. 3. Obrasci uporabe, UC-002] | [Izrada nacrta / preoblikovanje / prijevod / izvor dijagrama / sažimanje] | [Kratak opis] | [Ulaz zadan alatu; dodane, ispravljene ili uklonjene činjenice] | [Stranica dokumentacije, `.puml` datoteka, PR] |
-
-Stranice i artefakti koji nisu navedeni iznad izrađeni su bez pomoći generativne umjetne inteligencije. [Po želji: kao dodatne retke navedite kod ili ispitivanja izrađena uz pomoć umjetne inteligencije.]
+| Stranica, datoteka ili artefakt                        | Vrsta pomoći                               | Što je alat proizveo                                                                    | Što je član tima zadao i promijenio                                                                                                               | Lokacija                                                                                                                                          |
+| ------------------------------------------------------ | ------------------------------------------ | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Autentikacija, autorizacija i povezivanje s frontendom | Tehnička objašnjenja i prijedlozi rješenja | Objašnjenja OAuth prijave, sesija i CSRF zaštite te prijedlozi pojedinih dijelova koda. | Pavao je iznosio konkretne zahtjeve i postojeći kod te provjeravao i prilagođavao prijedloge aplikaciji. Sav kod je ručno pisan s razumijevanjem. | `backend/src/controllers/auth.py`, `backend/src/services/session_service.py`, `backend/src/authorization.py`, `frontend/scripts/services/auth.js` |
+| Testovi i otklanjanje pogrešaka                        | Pomoć pri dijagnostici i testiranju        | Prijedlozi testnih slučajeva i mogućih ispravaka prijavljenih pogrešaka.                | Pavao je analizirao dobivene rezultate i provjeravao izmjene pokretanjem testova.                                                                 | `backend/tests/test_auth.py`, `.github/workflows/ci.yml`                                                                                          |
 
 ### Provjera generiranog sadržaja
 
-| Provjera | Kako je provedena | Dokaz |
-| --- | --- | --- |
-| Činjenična točnost | [Svaka tvrdnja o funkcionalnostima, ponašanju ili arhitekturi uspoređena je s pokrenutom aplikacijom i kodom] | [Imena pregledavatelja; poveznice na zahtjev za uključivanje promjena (PR) ili zadatak] |
-| Nema tvrdnji o neostvarenim funkcionalnostima | [Provjereno je da opisane funkcionalnosti, ispitivanja i rezultati stvarno postoje; planirani rad označen je kao planiran] | [Usporedba s odjeljkom 5.4 (Ispitivanje) i odjeljkom 7.1 (Zaključak)] |
-| Dosljednost s drugim stranicama | [Nazivi, ID-ovi i dijagrami provjereni su prema Analizi zahtjeva, Obrascima uporabe, Arhitekturi i oblikovanju te Ispitivanju] | [Kontrolni popis ili bilješka pregleda] |
-| Izvori dijagrama | [Generirani PlantUML je iscrtan, ispravljen i odgovara implementiranom sustavu] | [`.puml` datoteka i izrađena slika] |
-| Povjerljivi sadržaj | [Kako je tim osigurao da u upite ili dokumentaciju nisu unesene tajne, pristupni podaci ni osobni podaci] | [Primijenjeni postupak] |
+| Provjera                                      | Kako je provedena                                                                                                              | Dokaz                                                                                   |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| Pavao – kod i testovi                         | Prijedlozi su uspoređivani s postojećom implementacijom i provjeravani lokalnim testovima tijekom razvoja.                     | `backend/tests/test_auth.py`, `backend/src/controllers/auth.py`                         |
+| Činjenična točnost                            | [Svaka tvrdnja o funkcionalnostima, ponašanju ili arhitekturi uspoređena je s pokrenutom aplikacijom i kodom]                  | [Imena pregledavatelja; poveznice na zahtjev za uključivanje promjena (PR) ili zadatak] |
+| Nema tvrdnji o neostvarenim funkcionalnostima | [Provjereno je da opisane funkcionalnosti, ispitivanja i rezultati stvarno postoje; planirani rad označen je kao planiran]     | [Usporedba s odjeljkom 5.4 (Ispitivanje) i odjeljkom 7.1 (Zaključak)]                   |
+| Dosljednost s drugim stranicama               | [Nazivi, ID-ovi i dijagrami provjereni su prema Analizi zahtjeva, Obrascima uporabe, Arhitekturi i oblikovanju te Ispitivanju] | [Kontrolni popis ili bilješka pregleda]                                                 |
+| Izvori dijagrama                              | [Generirani PlantUML je iscrtan, ispravljen i odgovara implementiranom sustavu]                                                | [`.puml` datoteka i izrađena slika]                                                     |
+| Povjerljivi sadržaj                           | [Kako je tim osigurao da u upite ili dokumentaciju nisu unesene tajne, pristupni podaci ni osobni podaci]                      | [Primijenjeni postupak]                                                                 |
 
 ### Pogreške pronađene u izlazu umjetne inteligencije
 
-| Problem | Kako je pronađen | Rješenje |
-| --- | --- | --- |
+| Problem                                                 | Kako je pronađen                                   | Rješenje                |
+| ------------------------------------------------------- | -------------------------------------------------- | ----------------------- |
 | [Netočna, izmišljena ili iz predloška preuzeta tvrdnja] | [Pregled, ispitivanje ili usporedba s aplikacijom] | [Ispravak s poveznicom] |
 
 <!-- UPUTA: Zabilježite stvarne ispravke ili napišite „Nisu utvrđene”. Općenita tvrdnja poput „sav tekst je pregledan” nije dokaz; dokaz su prethodne tablice. Tim mora moći objasniti svaku rečenicu koju objavi. -->
@@ -122,15 +122,15 @@ Stranice i artefakti koji nisu navedeni iznad izrađeni su bez pomoći generativ
 
 **Primjer — CrisisMap:**
 
-| Stranica ili artefakt | Vrsta pomoći | Što je alat proizveo | Što je tim zadao i promijenio | Lokacija |
-| --- | --- | --- | --- | --- |
-| 3. Obrasci uporabe, UC-002 | Izrada nacrta | Prvu inačicu glavnog i alternativnih tijekova | Tim je zadao stvarna polja obrasca i uklonio granu prijave u sustav koja u aplikaciji ne postoji | Primjer PR #31 |
-| Sekvencijski dijagram, podnošenje prijave | Izvor dijagrama | Nacrt PlantUML-a | Tim je uskladio nazive sudionika s komponentama i uklonio korak slanja obavijesti koji nije implementiran | `diagrams/report-submission.puml` (primjer) |
+| Stranica ili artefakt                     | Vrsta pomoći    | Što je alat proizveo                          | Što je tim zadao i promijenio                                                                             | Lokacija                                    |
+| ----------------------------------------- | --------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| 3. Obrasci uporabe, UC-002                | Izrada nacrta   | Prvu inačicu glavnog i alternativnih tijekova | Tim je zadao stvarna polja obrasca i uklonio granu prijave u sustav koja u aplikaciji ne postoji          | Primjer PR #31                              |
+| Sekvencijski dijagram, podnošenje prijave | Izvor dijagrama | Nacrt PlantUML-a                              | Tim je uskladio nazive sudionika s komponentama i uklonio korak slanja obavijesti koji nije implementiran | `diagrams/report-submission.puml` (primjer) |
 
-| Problem | Kako je pronađen | Rješenje |
-| --- | --- | --- |
-| U tekstu je stajalo da se obavijesti dostavljaju unutar jedne minute | Usporedba s Ispitivanjem (5.4): dostava nikada nije ispitana | Tvrdnja je uklonjena; obavijesti su navedene pod Budućim radom |
-| Nacrt je kopirao primjer zahtjeva F-005 iz predloška kao projektni zahtjev | Usporedba s vlastitim popisom zahtjeva tima | Zamijenjeno stvarnim zahtjevom tima |
+| Problem                                                                    | Kako je pronađen                                             | Rješenje                                                       |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------- |
+| U tekstu je stajalo da se obavijesti dostavljaju unutar jedne minute       | Usporedba s Ispitivanjem (5.4): dostava nikada nije ispitana | Tvrdnja je uklonjena; obavijesti su navedene pod Budućim radom |
+| Nacrt je kopirao primjer zahtjeva F-005 iz predloška kao projektni zahtjev | Usporedba s vlastitim popisom zahtjeva tima                  | Zamijenjeno stvarnim zahtjevom tima                            |
 
 **Analiza primjera:** Svaki redak navodi stranicu ili datoteku, ono što je alat generirao i ono što je tim promijenio. Pogreške su tipične za generiranu dokumentaciju: funkcionalnost koja ne postoji i tekst predloška prikazan kao činjenica o projektu. Tvrdnje poput „AI je korišten svugdje” ili „sav tekst je pregledan” nije moguće provjeriti. Ovo je nastavni scenarij, a ne opis objavljenog projekta.
 
