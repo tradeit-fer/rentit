@@ -38,7 +38,7 @@ Kratice: `PK` = Pavao Knez; `VL` = Viktor Lazić; `AW` = Adam Winkler; `LD` = Lu
 |                                                                                                                                                                                                                                                        | Adam Winkler    |                  |
 |                                                                                                                                                                                                                                                        | Lukas Davorija  |                  |
 |                                                                                                                                                                                                                                                        | Matej Miličević |                  |
-|                                                                                                                                                                                                                                                        | Patrik Šinko    |                  |
+| Izrada i postavljanje inicijalnog modela baze podataka, postavljanje migracije baze, izrada ER modela baze podataka, izrada funkcija za pristupanje bazi | Patrik Šinko    |        30          |
 | Izrada i ažuriranje dokumentacije. Izlučivanje zahtjeva. Izrada obrasca uporabe te dijagrama uporabe i razreda                                                                                                                                         | Leon Zorko      | 30               |
 
 ## A.4 Pregled promjena u repozitoriju
