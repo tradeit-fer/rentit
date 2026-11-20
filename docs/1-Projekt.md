@@ -2,7 +2,7 @@
 
 ## 1.1 Problem i cilj projekta
 
-TradeIt rješava problem pronalaska predmeta koji su korisniku potrebni samo privremeno. Očekivana korist je jednostavniji dogovor najma i veća iskoristivost postojećih predmeta; financijska ili okolišna korist nije izmjerena.
+RentIt rješava problem pronalaska predmeta koji su korisniku potrebni samo privremeno. Očekivana korist je jednostavniji dogovor najma i veća iskoristivost postojećih predmeta; financijska ili okolišna korist nije izmjerena.
 
 Projekt obuhvaća razvoj web-aplikacije koja korisnicima omogućuje iznajmljivanje i unajmljivanje predmeta koje ne koriste često, ali koji drugim osobama mogu biti potrebni za kratkotrajnu upotrebu. Primjeri takvih predmeta uključuju alate, bicikle, opremu za školu te razne kućanske uređaje. Umjesto kupnje predmeta koji će im možda trebati samo jednom ili nekoliko puta, korisnici ga mogu unajmiti od druge osobe po manjoj cijeni. S druge strane, vlasnici predmeta mogu ostvariti dodatnu zaradu iznajmljivanjem stvari koje bi inače većinu vremena stajale neiskorištene.
 
