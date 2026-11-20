@@ -39,12 +39,12 @@ Prema kodu poslužitelj koristi port 10000 ili vrijednost `PORT`; `/health` vra�
 
 | Tehnologija ili alat               | Uloga                                                 | Status i razlog                                                          |
 | ---------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------ |
-| HTML5, CSS, JavaScript             | Zasloni, stilovi, navigacija i lokalne interakcije    | Planirani klijentski dio; raniji dizajn još nije prenesen u ovaj repozitorij              |
-| Node.js i npm                | Izvođenje oglednog poslužitelja i naredbi iz predloška                           | Postojeći npm testovi samo ispisuju poruke; jsdom testovi nisu u ovom ZIP-u       |
-| Python + FastAPI                   | Planirani HTTP API i poslovna pravila                 | Prijedlog za raspravu; API još nije implementiran                        |
-| PostgreSQL                         | Planirana zajednička pohrana i integritet rezervacija | Prijedlog; shema i migracije još nisu primijenjene                       |
-| SQLAlchemy + Alembic               | Planirano preslikavanje modela i migracije            | Uvesti uz prvi vertikalni tijek API-ja                                   |
-| OAuth/OIDC, Google Maps, AI servis | Planirane prijava, lokacija i provjera oglasa         | Vanjske integracije još nisu povezane; pružatelje i troškovnik potvrditi |
+| HTML5, CSS, JavaScript             | Zasloni, stilovi, navigacija i lokalne interakcije    |              |
+| Node.js i npm                | Izvođenje oglednog poslužitelja i naredbi iz predloška                           |       |
+| Python + FastAPI                   | Planirani HTTP API i poslovna pravila                 |                         |
+| PostgreSQL                         | Planirana zajednička pohrana i integritet rezervacija |                       |
+| SQLAlchemy + Alembic               | Planirano preslikavanje modela i migracije            |                                   |
+| OAuth/OIDC, Google Maps, AI servis | Planirane prijava, lokacija i provjera oglasa         | OAuth implementiran; ostatak ceka implementaciju u drugom ciklusu |
 | GitHub + GitHub Actions            | Verzije, pregled promjena i automatizirane provjere   | Repozitorij je naveden; workflow je predložak bez stvarne testne provjere           |
 
 ## Struktura
