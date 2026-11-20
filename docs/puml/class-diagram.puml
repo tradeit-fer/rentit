@@ -1,7 +1,199 @@
 @startuml
-class User {
-  +Long id
-  +String username
-  +String email
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor #80BFFF
+    BorderColor #2A5A8F
+    ArrowColor #555555
+    FontColor black
 }
+skinparam note {
+    BackgroundColor #F9F9F9
+    BorderColor #CCCCCC
+}
+skinparam nodesep 40
+skinparam ranksep 50
+skinparam defaultFontName Arial
+
+' Uklanjamo automatsko prikazivanje praznih metoda/atributa
+hide empty members
+
+' --- DEFINICIJE SERVISA (Aplikacijski sloj) ---
+
+class ListingService <<service>> {
+  + create_listing(...)
+  + get_listings(...)
+  + get_listing_by_id(id)
+}
+
+class RentalService <<service>> {
+  + calculate_quote(...)
+  + create_booking(...)
+  + accept_request(...)
+  + process_handover(...)
+}
+
+class UserService <<service>> {
+  + getByRole(role)
+  + getOwnerByID(id)
+  + create(...)
+}
+
+class ReviewService <<service>> {
+  + getRating(subject_id)
+  + getReviewCount(subject_id)
+}
+
+class CategoryService <<service>> {
+  + get_with_descendants(...)
+  + get_ID_by_name(...)
+}
+
+class UserProfileService <<service>> {
+  + get_user_profile(user_id)
+}
+
+class SessionService <<service>> {
+  + create_session(...)
+  + get_current_session(...)
+  + verify_csrf(...)
+}
+
+class AuthService <<service>> {
+  + get_or_create_google_user(...)
+}
+
+' --- DEFINICIJE MODELA (Domenski sloj) ---
+
+class User <<entity>> {
+  + id : str
+  + name : str
+  + email : str
+  + role : str
+  + is_active : bool
+}
+
+class UserProfile <<entity>> {
+  + id : str
+  + display_name : str
+  + bio : str
+}
+
+class ExternalIdentity <<entity>> {
+  + id : str
+  + provider : str
+  + provider_subject : str
+}
+
+class AuthSession <<entity>> {
+  + id : str
+  + token_hash : str
+  + expires_at : datetime
+}
+
+class Category <<entity>> {
+  + id : int
+  + name : str
+}
+
+class Listing <<entity>> {
+  + id : int
+  + title : str
+  + price_cents : int
+  + status : str
+}
+
+class ListingLocation <<entity>> {
+  + latitude : Decimal
+  + longitude : Decimal
+}
+
+class RentalRequest <<entity>> {
+  + id : int
+  + start_date : datetime
+  + end_date : datetime
+  + status : str
+}
+
+class Rental <<entity>> {
+  + id : int
+  + status : str
+}
+
+class RentalTerms <<entity>> {
+  + total_amount_cents : int
+}
+
+class Review <<entity>> {
+  + id : int
+  + rating : int
+}
+
+' --- STRELICE ZAVISNOSTI (SERVISI POZIVAJU MODELE ILI DRUGE SERVISE) ---
+
+ListingService ..> Listing : «uses»
+ListingService ..> CategoryService : «calls»
+ListingService ..> UserService : «calls»
+
+RentalService ..> Rental : «uses»
+RentalService ..> RentalRequest : «uses»
+RentalService ..> RentalTerms : «uses»
+
+UserService ..> User : «uses»
+UserService ..> ReviewService : «calls»
+
+ReviewService ..> Review : «uses»
+CategoryService ..> Category : «uses»
+UserProfileService ..> UserProfile : «uses»
+
+SessionService ..> AuthSession : «uses»
+SessionService ..> User : «uses»
+
+AuthService ..> ExternalIdentity : «uses»
+AuthService ..> User : «uses»
+
+' --- STRELICE ASOCIJACIJA (VEZE UNUTAR MODELA) ---
+' Koristimo *-- za kompoziciju i -- za asocijaciju
+
+User "1" *-- "0..1" UserProfile
+User "1" *-- "0..*" ExternalIdentity
+User "1" *-- "0..*" AuthSession
+User "1" -- "0..*" Listing : poseduje >
+
+Category "0..1" -- "0..*" Category : roditelj >
+Category "1" -- "0..*" Listing : kategorija >
+
+Listing "1" *-- "0..1" ListingLocation : lokacija >
+Listing "1" -- "0..*" RentalRequest : zahtevi >
+
+RentalRequest "1" *-- "0..1" Rental : potvrdjen >
+Rental "1" *-- "1" RentalTerms : uslovi >
+Rental "1" *-- "0..*" Review : recenzije >
+
+' --- NAPOMENE ---
+
+note right of RentalService
+  Pravila:
+  - Platform fee = 10%
+  - Statusi "confirmed", "active" 
+    blokiraju termin
+end note
+
+
+note right of ListingLocation
+  CheckConstraint:
+  latitude u [-90, 90]
+  longitude u [-180, 180]
+end note
+
+note right of RentalTerms
+  CheckConstraint:
+  total = rental_amount + platform_fee
+end note
+
+note right of Review
+  CheckConstraint:
+  rating između 1 i 5.
+  author_id != subject_id
+end note
+
 @enduml
