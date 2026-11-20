@@ -2,7 +2,7 @@
 
 ## 1.1 Problem i cilj projekta
 
-TradeIt rješava problem pronalaska predmeta koji su korisniku potrebni samo privremeno. Očekivana korist je jednostavniji dogovor najma i veća iskoristivost postojećih predmeta; financijska ili okolišna korist nije izmjerena.
+RentIt rješava problem pronalaska predmeta koji su korisniku potrebni samo privremeno. Očekivana korist je jednostavniji dogovor najma i veća iskoristivost postojećih predmeta; financijska ili okolišna korist nije izmjerena.
 
 Projekt obuhvaća razvoj web-aplikacije koja korisnicima omogućuje iznajmljivanje i unajmljivanje predmeta koje ne koriste često, ali koji drugim osobama mogu biti potrebni za kratkotrajnu upotrebu. Primjeri takvih predmeta uključuju alate, bicikle, opremu za školu te razne kućanske uređaje. Umjesto kupnje predmeta koji će im možda trebati samo jednom ili nekoliko puta, korisnici ga mogu unajmiti od druge osobe po manjoj cijeni. S druge strane, vlasnici predmeta mogu ostvariti dodatnu zaradu iznajmljivanjem stvari koje bi inače većinu vremena stajale neiskorištene.
 
@@ -31,6 +31,6 @@ Ciljana skupina korisnika uključuje pojedince koji žele smanjiti troškove pov
 
 ## 1.4 Postojeći pristupi i opravdanost projekta
 
-Dostavljeni opis projekta navodi korisnički scenarij traženja grafičkog kalkulatora preko više platformi i zasebnih razgovora s potencijalnim najmodavcima. Takav postupak omogućuje izravan dogovor, ali podaci o predmetu, raspoloživosti i stanju nisu objedinjeni u jednom zapisu najma. TradeIt predlaže povezati te korake i podršku na jednom mjestu. To je polazni scenarij iz projektnog opisa, a ne rezultat provedenog tržišnog istraživanja ili tvrdnja da slični proizvodi ne postoje.
+Dostavljeni opis projekta navodi korisnički scenarij traženja grafičkog kalkulatora preko više platformi i zasebnih razgovora s potencijalnim najmodavcima. Takav postupak omogućuje izravan dogovor, ali podaci o predmetu, raspoloživosti i stanju nisu objedinjeni u jednom zapisu najma. RentIt predlaže povezati te korake i podršku na jednom mjestu. To je polazni scenarij iz projektnog opisa, a ne rezultat provedenog tržišnog istraživanja ili tvrdnja da slični proizvodi ne postoje.
 
 ----
