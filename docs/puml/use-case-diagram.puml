@@ -52,14 +52,14 @@ rectangle "Sustav TradeIt" {
     
 }
 
-Admin -- UC_Login
-Admin -- UC_Moderate
-Visitor -- UC_Login
-User -- UC_Browse
-User -- UC_Create
-User -- UC_MyPosts
+Admin --> UC_Login
+Admin --> UC_Moderate
+Visitor --> UC_Login
+User --> UC_Browse
+User --> UC_Create
+User --> UC_MyPosts
 
-Auth -- UC_Login
+Auth --> UC_Login
 
 UC_Create ..> UC_UploadPhoto : <<include>>
 UC_Create ..> UC_ValidatePost : <<include>>
