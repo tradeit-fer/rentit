@@ -31,6 +31,6 @@ Ciljana skupina korisnika uključuje pojedince koji žele smanjiti troškove pov
 
 ## 1.4 Postojeći pristupi i opravdanost projekta
 
-Dostavljeni opis projekta navodi korisnički scenarij traženja grafičkog kalkulatora preko više platformi i zasebnih razgovora s potencijalnim najmodavcima. Takav postupak omogućuje izravan dogovor, ali podaci o predmetu, raspoloživosti i stanju nisu objedinjeni u jednom zapisu najma. TradeIt predlaže povezati te korake i podršku na jednom mjestu. To je polazni scenarij iz projektnog opisa, a ne rezultat provedenog tržišnog istraživanja ili tvrdnja da slični proizvodi ne postoje.
+Dostavljeni opis projekta navodi korisnički scenarij traženja grafičkog kalkulatora preko više platformi i zasebnih razgovora s potencijalnim najmodavcima. Takav postupak omogućuje izravan dogovor, ali podaci o predmetu, raspoloživosti i stanju nisu objedinjeni u jednom zapisu najma. RentIt predlaže povezati te korake i podršku na jednom mjestu. To je polazni scenarij iz projektnog opisa, a ne rezultat provedenog tržišnog istraživanja ili tvrdnja da slični proizvodi ne postoje.
 
 ---
