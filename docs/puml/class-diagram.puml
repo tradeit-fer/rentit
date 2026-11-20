@@ -14,10 +14,10 @@ skinparam nodesep 40
 skinparam ranksep 50
 skinparam defaultFontName Arial
 
-' Uklanjamo automatsko prikazivanje praznih metoda/atributa
+
 hide empty members
 
-' --- DEFINICIJE SERVISA (Aplikacijski sloj) ---
+
 
 class ListingService <<service>> {
   + create_listing(...)
@@ -62,7 +62,6 @@ class AuthService <<service>> {
   + get_or_create_google_user(...)
 }
 
-' --- DEFINICIJE MODELA (Domenski sloj) ---
 
 class User <<entity>> {
   + id : str
@@ -128,7 +127,7 @@ class Review <<entity>> {
   + rating : int
 }
 
-' --- STRELICE ZAVISNOSTI (SERVISI POZIVAJU MODELE ILI DRUGE SERVISE) ---
+
 
 ListingService ..> Listing : «uses»
 ListingService ..> CategoryService : «calls»
@@ -151,8 +150,7 @@ SessionService ..> User : «uses»
 AuthService ..> ExternalIdentity : «uses»
 AuthService ..> User : «uses»
 
-' --- STRELICE ASOCIJACIJA (VEZE UNUTAR MODELA) ---
-' Koristimo *-- za kompoziciju i -- za asocijaciju
+
 
 User "1" *-- "0..1" UserProfile
 User "1" *-- "0..*" ExternalIdentity
@@ -169,7 +167,7 @@ RentalRequest "1" *-- "0..1" Rental : potvrdjen >
 Rental "1" *-- "1" RentalTerms : uslovi >
 Rental "1" *-- "0..*" Review : recenzije >
 
-' --- NAPOMENE ---
+
 
 note right of RentalService
   Pravila:
